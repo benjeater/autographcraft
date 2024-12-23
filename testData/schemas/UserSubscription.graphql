@@ -1,0 +1,8 @@
+type UserSubscription @model {
+  id: ID!
+  userId: ID! @index(name: "byUserId")
+  user: User @hasOne(idField: "userId")
+  subscriptionName: String!
+  startDate: ISO8601DateTime!
+  expirationDate: ISO8601DateTime
+}

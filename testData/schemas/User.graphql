@@ -1,0 +1,25 @@
+type User
+  @model
+  @modelAuth(
+    authorisingModel: "User"
+    idField: "id"
+    methods: [create, read, update, list]
+  ) {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  emailAddress: String!
+  dateOfBirth: String @index(name: "byDateOfBirth")
+  arrayField: [Int]
+  arrayFieldMandatoryArray: [Int]!
+  arrayFieldMandatoryValueInside: [Int!]
+  arrayFieldMandatoryArrayAndMandatoryValueInside: [Int!]!
+  testField: TestField
+  subscriptions: [UserSubscription] @hasMany(targetIndexName: "byUserId")
+  floatField: Float
+}
+
+type TestField {
+  fieldOne: String
+  fieldTwo: Int
+}

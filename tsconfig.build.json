@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.test.tsx",
+    "node_modules",
+    "dist",
+    "packages/*/dist",
+    "packages/*/node_modules",
+    "amplify",
+    "generated"
+  ],
+  "references": [
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/mongodb"
+    },
+    {
+      "path": "./packages/server"
+    },
+    {
+      "path": "./packages/generate"
+    }
+  ]
+}

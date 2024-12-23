@@ -1,0 +1,24 @@
+{
+  "name": "autographcraft",
+  "private": "true",
+  "type": "module",
+  "workspaces": [
+    "packages/core",
+    "packages/mongodb",
+    "packages/generate"
+  ],
+  "scripts": {
+    "copyBaseReadMe": "for dir in packages/*; do cp README.md \"$dir/\"; done",
+    "copyOtherReadMes": "for dir in packages/*; do cp README-*.md \"$dir/\"; done",
+    "copyExamples": "for dir in packages/*; do cp -r examples \"$dir/\"; done",
+    "copyFiles": "npm run copyBaseReadMe && npm run copyOtherReadMes && npm run copyExamples",
+    "build": "tsc --build tsconfig.build.json  && tsc-alias -p tsconfig.build.json",
+    "buildAll": "npm run bump -ws && npm pack -ws",
+    "publishAll": "npm run copyReadMes && npm version patch -ws && npm publish -w=packages/core && npm publish -w=packages/generate && npm publish -w=packages/mongodb",
+    "generate": "npm run build -w=packages/core && npx autographcraft generate"
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
+}

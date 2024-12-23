@@ -1,0 +1,8 @@
+type Query {
+  testQueryTwo(argTwo: String): String
+  testQueryThree(argThree: SpecialType): String
+}
+
+input SpecialType {
+  specialField: String
+}

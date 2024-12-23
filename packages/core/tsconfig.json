@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["./src/**/*"],
+  "exclude": [
+    "./**/*.spec.*",
+    "./**/*.data.*",
+    "./**/*.test.*",
+    "./**/__mocks__/*",
+    "./**/__tests__/*"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "emitDeclarationOnly": false,
+    "sourceMap": false,
+    "isolatedModules": true
+  }
+}
