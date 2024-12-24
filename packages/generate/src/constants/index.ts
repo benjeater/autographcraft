@@ -8,7 +8,7 @@ export const TOKEN_FILE_NAME = 'token' as const;
 
 export const SIGN_IN_URL = 'https://autographcraft.com/auth/signin' as const;
 export const AUTOGRAPHCRAFT_API_URL =
-  'https://tkptzvhy4rdi7ib4wp2m54dkpa.appsync-api.eu-west-1.amazonaws.com/graphql' as const;
+  'https://api.autographcraft.com/graphql' as const;
 
 export const PROCESS_ARGUMENT_VECTORS: ProcessArgumentVector[] = [
   {

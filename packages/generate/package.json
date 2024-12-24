@@ -1,6 +1,6 @@
 {
   "name": "@autographcraft/generate",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "The generate application for AutoGraphCraft",
   "main": "dist/app.js",
   "bin": {
