@@ -4,6 +4,7 @@
 </p>
 
 - [Description](#description)
+  - [Features](#features)
 - [Install](#install)
 - [Setup](#setup)
   - [Initialise the Package](#initialise-the-package)
@@ -12,12 +13,24 @@
 - [Usage](#usage)
   - [Specifying the Schema](#specifying-the-schema)
   - [Implementing the Generated Output](#implementing-the-generated-output)
+  - [Custom Resolvers](#custom-resolvers)
 - [Author](#author)
 - [Show your support](#show-your-support)
 
 ## Description
 
 AutoGraphCraft can generate an entire GraphQL API from GraphQL schema files, including the resolver functions, authorisation logic, entity relationships, database schema and typescript types.
+
+### Features
+
+- **Best Practices**: AutoGraphCraft follows best practices for GraphQL and database design
+- **Type Generation**: AutoGraphCraft will generate the typescript types for the schema files, including the types for the resolvers and context
+- **Resolver Generation**: AutoGraphCraft will generate the entire GraphQL API from the schema files, including the resolvers, types, and context.
+- **Customisable**: The generated output can be customised by adding additional custom resolver
+- **Database Agnostic**: The resolvers can be generated for the database you are using by installing the appropriate resolver package
+- **Type Safe**: The generated types are fully typed and can be used in your application to ensure type safety
+- **Relationships**: The resolvers can be generated to include relationships between entities
+- **Authentication**: Allow/Disallow access to data/entites based on the caller's permissions
 
 ## Install
 
@@ -180,6 +193,28 @@ const context = async (initialContext) => {
 ```
 
 An example of how to implement the resolvers with GraphQL Yoga can be found in the [Examples](./examples) directory.
+
+### Custom Resolvers
+
+Some queries and mutations may require custom resolvers because a functionality is required that does not fit within the CRUDL architecture; using the example from the previous section, there may be a requirement to count the number of posts that a user has made.
+
+To create a new custom query or custom mutation, create a new `.graphql` file in the `schemaSourceDirectory` directory.  The file should contain the `Query` or `Mutation` type:
+
+```graphql
+type Query {
+  countPostsByUser(userId: ID!): Int!
+}
+
+type Mutation {
+  deleteAllPostsByUser(userId: ID!): [Post]
+}
+```
+
+Multiple `type Query` and `type Mutation` types can be defined in the `schemaSourceDirectory` directory files and will be combined into the final schema.
+
+The custom resolvers will be created based on each query and mutation, and will be placed in the `queriesDirectory` directory or the `mutationsDirectory` directory from the `autographcraft.config.js` file.  The custom queries and mutations will already be imported into the resolvers file, so they can be used without any modification to the GraphQL server.
+
+Each of the custom resolvers will be typed based on the schema.  You can then implement the required logic in the custom resolver.
 
 ## Author
 
