@@ -57,17 +57,17 @@ export async function getAuthIdToken(): Promise<string> {
 
       // If the user can attempt to refresh the token, do so
       // TODO: write logic to attempt to refresh the ID token
-      if (shouldAttemptRefresh && !shouldOpenSite) {
-        logger.info(`Attempting to refresh ID token...`);
+      // if (shouldAttemptRefresh && !shouldOpenSite) {
+      //   logger.info(`Attempting to refresh ID token...`);
 
-        const newTokens: AuthTokens = {
-          idToken: '',
-          accessToken: '',
-          refreshToken: '',
-        };
-        resolve(newTokens!.idToken);
-        return;
-      }
+      //   const newTokens: AuthTokens = {
+      //     idToken: '',
+      //     accessToken: '',
+      //     refreshToken: '',
+      //   };
+      //   resolve(newTokens!.idToken);
+      //   return;
+      // }
 
       // The user needs to sign in/up, so open the sign in page
       logger.info(`Opening sign in page...`);

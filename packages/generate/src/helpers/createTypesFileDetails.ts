@@ -1,7 +1,6 @@
 import { join } from 'path';
 import { generate } from '@graphql-codegen/cli';
 import type { Types } from '@graphql-codegen/plugin-helpers';
-import type { AutoGraphCraftApiResponse } from '../types';
 import type {
   AutoGraphCraftConfiguration,
   OutputFileDetail,
@@ -19,11 +18,11 @@ type CodeGenOutputFileDetail = {
 export async function createTypesFileDetails(
   currentWorkingDirectory: string,
   configuration: AutoGraphCraftConfiguration,
-  apiResponse: AutoGraphCraftApiResponse
+  files: OutputFileDetail[]
 ): Promise<OutputFileDetail[]> {
   const printableSchemaFileContent = getPrintableSchemaFileContent(
     configuration,
-    apiResponse
+    files
   );
 
   const outputFiles: OutputFileDetail[] = [];
@@ -68,7 +67,7 @@ export async function createTypesFileDetails(
  */
 function getPrintableSchemaFileContent(
   configuration: AutoGraphCraftConfiguration,
-  apiResponse: AutoGraphCraftApiResponse
+  files: OutputFileDetail[]
 ): string {
   const printableSchemaFilePath = join(
     configuration.generatedTypesDirectory,
@@ -76,12 +75,12 @@ function getPrintableSchemaFileContent(
   );
 
   // Remove leading slash from all file paths
-  const files = apiResponse.files.map((file) => {
+  const mappedFiles = files.map((file) => {
     file.filePath = file.filePath.replace(/^\//, '');
     return file;
   });
 
-  const printableSchemaFile = files.find(
+  const printableSchemaFile = mappedFiles.find(
     (file) => file.filePath === printableSchemaFilePath
   );
   if (!printableSchemaFile) {

@@ -14,7 +14,7 @@
     "copyFiles": "npm run copyBaseReadMe && npm run copyOtherReadMes && npm run copyExamples",
     "build": "tsc --build tsconfig.build.json  && tsc-alias -p tsconfig.build.json",
     "buildAll": "npm run bump -ws && npm pack -ws",
-    "publishAll": "npm run copyFiles && npm publish -w=packages/core && npm publish -w=packages/generate && npm publish -w=packages/mongodb",
+    "publishAll": "npm run bumpPatch -ws && npm run copyFiles && npm publish -w=packages/core && npm publish -w=packages/generate && npm publish -w=packages/mongodb",
     "generate": "npm run build -w=packages/core && npx autographcraft generate"
   },
   "ts-node": {

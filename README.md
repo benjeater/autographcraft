@@ -8,6 +8,7 @@
 - [Install](#install)
 - [Setup](#setup)
   - [Initialise the Package](#initialise-the-package)
+  - [Running the Package](#running-the-package)
   - [Implement the Package](#implement-the-package)
   - [Update Configuration](#update-configuration)
 - [Usage](#usage)
@@ -76,6 +77,16 @@ If you wish to initialise with the default settings, use:
 ```sh
 npx autographcraft init --default
 ```
+
+### Running the Package
+
+The package can be run using the `generate` command:
+
+```sh
+npx autographcraft generate
+```
+
+This will collect all the generation information and call the AutoGraphCraft API to generate the required files.  If you are not signed in, you will be directed to sign in or sign up to the AutoGraphCraft platform in your browser.
 
 ### Implement the Package
 

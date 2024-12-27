@@ -1,4 +1,8 @@
-import { getExistingConfiguration, createTypesFileDetails } from '../helpers';
+import {
+  getExistingConfiguration,
+  createTypesFileDetails,
+  getFilesFromResponse,
+} from '../helpers';
 import { logger } from '@autographcraft/core';
 import { printStatistics, type PrintStatisticsParams } from './helpers';
 import {
@@ -12,9 +16,6 @@ export async function generateAndSave(
   currentWorkingDirectory: string,
   params: string[]
 ): Promise<void> {
-  // Start the timer
-  const startTime = process.hrtime.bigint();
-
   // Check if the request is a dry run
   const isDryRun = params.includes('--dry-run');
   if (isDryRun) {
@@ -32,15 +33,18 @@ export async function generateAndSave(
     process.exit(1);
   }
 
+  // Get the auth token to call the API with
+  const authIdToken = await getAuthIdToken();
+
+  // Start the timer
+  const startTime = process.hrtime.bigint();
+
   // Get joined schema
   const schema = await fetchMergedTypeDefs(
     currentWorkingDirectory,
     existingConfig,
     [] // custom scalars
   );
-
-  // Get the auth token to call the API with
-  const authIdToken = await getAuthIdToken();
 
   // Send schema to autographcraft API
   const apiResponse = await getAutoGraphCraftApiResponse(
@@ -49,14 +53,17 @@ export async function generateAndSave(
     schema.printableTypeDefs
   );
 
+  // Get the files from the signed URL or files key in the API response
+  const files = await getFilesFromResponse(apiResponse);
+
   // Create the types locally
   const typesFiles = await createTypesFileDetails(
     currentWorkingDirectory,
     existingConfig,
-    apiResponse
+    files
   );
 
-  const allFiles = [...apiResponse.files, ...typesFiles];
+  const allFiles = [...files, ...typesFiles];
 
   // Save all files to the correct location
   writeFilesToFileSystem(allFiles, isDryRun);

@@ -1,6 +1,6 @@
 {
   "name": "@autographcraft/mongodb",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "The MongoDB resolver plugin for AutoGraphCraft",
   "main": "dist/app.js",
   "types": "dist/app",
@@ -16,7 +16,7 @@
     "test": "jest",
     "testW": "jest --watch",
     "bump": "npm version prerelease --no-git-tag-version",
-    "bumpPatch": "npm version patch --no-git-tag-version",
+    "bumpPatch": "npm version patch",
     "prepack": "npm run compile && jest",
     "build": "npm run compile",
     "start": "npm run compile && dotenvx run --quiet -- node dist/app.js",
@@ -30,7 +30,7 @@
   "dependencies": {
     "graphql": "^15.5.0",
     "mongoose": "^8.8.3",
-    "@autographcraft/core": "^1.1.0"
+    "@autographcraft/core": "^1.1.2"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.22.0",

@@ -1,6 +1,6 @@
 {
   "name": "@autographcraft/core",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "The core application for AutoGraphCraft",
   "main": "dist/app.js",
   "types": "dist/app",
@@ -16,7 +16,7 @@
     "test": "jest",
     "testW": "jest --watch",
     "bump": "npm version prerelease --no-git-tag-version",
-    "bumpPatch": "npm version patch --no-git-tag-version",
+    "bumpPatch": "npm version patch",
     "prepack": "npm run compile && jest",
     "build": "npm run compile",
     "start": "npm run compile && dotenvx run --quiet -- node dist/app.js",

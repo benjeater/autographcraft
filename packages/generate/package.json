@@ -1,6 +1,6 @@
 {
   "name": "@autographcraft/generate",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "The generate application for AutoGraphCraft",
   "main": "dist/app.js",
   "bin": {
@@ -19,7 +19,7 @@
     "test": "jest",
     "testW": "jest --watch",
     "bump": "npm version prerelease --no-git-tag-version",
-    "bumpPatch": "npm version patch --no-git-tag-version",
+    "bumpPatch": "npm version patch",
     "prepack": "npm run compile && jest",
     "build": "npm run compile",
     "start": "npm run compile && dotenvx run --quiet -- node dist/app.js",
@@ -31,7 +31,7 @@
   "repository": "https://github.com/benjeater/autographcraft",
   "license": "MIT",
   "dependencies": {
-    "@autographcraft/core": "^1.1.0",
+    "@autographcraft/core": "^1.1.2",
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/plugin-helpers": "^5.1.0",
     "@graphql-codegen/typescript": "4.1.1",

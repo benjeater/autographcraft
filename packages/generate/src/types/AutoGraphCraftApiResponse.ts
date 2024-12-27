@@ -1,6 +1,4 @@
-import type { OutputFileDetail } from '@autographcraft/core';
-
 export type AutoGraphCraftApiResponse = {
-  files: OutputFileDetail[];
+  signedUrl: string;
   executionDuration: number;
 };
