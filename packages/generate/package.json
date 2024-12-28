@@ -1,6 +1,6 @@
 {
   "name": "@autographcraft/generate",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "The generate application for AutoGraphCraft",
   "main": "dist/app.js",
   "bin": {
@@ -31,7 +31,7 @@
   "repository": "https://github.com/benjeater/autographcraft",
   "license": "MIT",
   "dependencies": {
-    "@autographcraft/core": "^1.1.2",
+    "@autographcraft/core": "^1.1.3",
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/plugin-helpers": "^5.1.0",
     "@graphql-codegen/typescript": "4.1.1",
