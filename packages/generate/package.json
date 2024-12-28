@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist/*",
-    "compile": "tsc -p tsconfig.json && tsc-alias",
+    "compile": "tsc -p tsconfig.build.json && tsc-alias",
     "test": "jest",
     "testW": "jest --watch",
     "bump": "npm version prerelease --no-git-tag-version",

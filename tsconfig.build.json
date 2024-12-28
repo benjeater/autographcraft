@@ -1,5 +1,10 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "dist"
+  },
   "exclude": [
     "**/*.spec.ts",
     "**/*.test.ts",
@@ -10,20 +15,18 @@
     "packages/*/dist",
     "packages/*/node_modules",
     "amplify",
-    "generated"
+    "generated",
+    "./**/examples/*"
   ],
   "references": [
     {
-      "path": "./packages/core"
+      "path": "./packages/core/tsconfig.build.json"
     },
     {
-      "path": "./packages/mongodb"
+      "path": "./packages/mongodb/tsconfig.build.json"
     },
     {
-      "path": "./packages/server"
-    },
-    {
-      "path": "./packages/generate"
+      "path": "./packages/generate/tsconfig.build.json"
     }
   ]
 }
