@@ -28,7 +28,10 @@
     "lint": "eslint"
   },
   "author": "Ben Jeater <benjeater+autographcraft@gmail.com>",
-  "repository": "https://github.com/benjeater/autographcraft",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjeater/autographcraft.git"
+  },
   "license": "MIT",
   "dependencies": {
     "@autographcraft/core": "^1.1.3",
