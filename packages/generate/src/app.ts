@@ -34,7 +34,7 @@ export async function main() {
         processFunctionToRun = help;
     }
     await processFunctionToRun(currentWorkingDirectory, params);
-    process.exit(0);
+    logger.end();
   }
 
   logger.warn(

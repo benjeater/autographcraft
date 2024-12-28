@@ -69,7 +69,7 @@ The `authorisationStructure` setting is an array of objects.  Each object repres
 ]
 ```
 
-The `targetModelName` property is the name of the model that the authorisation data is being fetched for.  The `targetModelName` property is required.  When initialising the `authgraphcraft` context, the `authInitialisationData` object should be passed in with the `targetModelName` as a key.  The value of the key should be the ID of the `User`. For instance:
+The `targetModelName` property is the name of the model that the authorisation data is being fetched for.  The `targetModelName` property is required.  When initialising the `autographcraft` context, the `authInitialisationData` object should be passed in with the `targetModelName` as a key.  The value of the key should be the ID of the `User`. For instance:
 
 ```json
 {

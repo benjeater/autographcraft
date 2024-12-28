@@ -129,7 +129,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# AuthGraphCraft Generated Folders
+# AutoGraphCraft Generated Folders
 generated/models/*/*
 !generated/models/*/hookIns
 generated/generatedDatabase

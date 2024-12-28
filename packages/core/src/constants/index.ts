@@ -13,6 +13,7 @@ export const RESOLVER_FOLDER_NAME = 'resolvers';
 export const TYPESCRIPT_TYPES_FILE_NAME = 'typescriptTypes';
 export const TYPE_DEFS_FILE_NAME = 'typedefs.graphql';
 export const HOOK_INS_DIRECTORY_NAME = 'hookIns';
+export const LOGGER_FILE_PATH = 'autographcraft.log';
 
 export const DEFAULT_CONFIG: AutoGraphCraftConfiguration = {
   generatedTypesDirectory: 'src/generatedTypes',
@@ -29,7 +30,7 @@ export const DEFAULT_CONFIG: AutoGraphCraftConfiguration = {
 } as const;
 
 export const GIT_IGNORE_LABEL: string =
-  '# AuthGraphCraft Generated Folders' as const;
+  '# AutoGraphCraft Generated Folders' as const;
 
 export const CONFIG_FILE_NAME: string = 'autographcraft.config.js' as const;
 

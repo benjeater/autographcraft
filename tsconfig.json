@@ -3,7 +3,7 @@
     "./generated/**/*",
     "./dist/**/*",
     "./node_modules/**/*",
-    "examples/**/*"
+    "./**/examples/**/*"
   ],
   "tsc-alias": {
     "resolveFullPaths": true,

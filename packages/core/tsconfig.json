@@ -6,7 +6,8 @@
     "./**/*.data.*",
     "./**/*.test.*",
     "./**/__mocks__/*",
-    "./**/__tests__/*"
+    "./**/__tests__/*",
+    "./**/examples/*"
   ],
   "compilerOptions": {
     "rootDir": "./src",

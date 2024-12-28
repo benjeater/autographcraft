@@ -1,4 +1,5 @@
 import winston, { format } from 'winston';
+import { LOGGER_FILE_PATH } from '../constants';
 
 const myFormat = format.printf(({ level, message, timestamp }) => {
   return `${timestamp} - ${level}: ${message}`;
@@ -12,18 +13,16 @@ const winstonFormat = format.combine(
 
 const winstonFileFormat = format.combine(format.timestamp(), myFormat);
 
-winston.configure({
+const logger = winston.createLogger({
   transports: [
     new winston.transports.Console({
       format: winstonFormat,
     }),
     new winston.transports.File({
-      filename: 'combined.log',
+      filename: LOGGER_FILE_PATH,
       format: winstonFileFormat,
     }),
   ],
 });
 
-export const logger = winston;
-
-export default winston;
+export default logger;

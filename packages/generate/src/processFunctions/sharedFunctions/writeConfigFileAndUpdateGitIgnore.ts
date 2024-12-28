@@ -7,6 +7,7 @@ import {
   CONFIG_FILE_NAME,
   GIT_IGNORE_LABEL,
   HOOK_INS_DIRECTORY_NAME,
+  LOGGER_FILE_PATH,
 } from '@autographcraft/core';
 /**
  * Writes the configuration to the working directory and updates the gitignore
@@ -62,6 +63,7 @@ export function writeConfigFileAndUpdateGitIgnore(
 
   const modelGitIgnoreLine = `${generatedModelsDirectory}/*/*`;
   const modelGitIgnoreIncludeHookInsLine = `!${generatedModelsDirectory}/*/${HOOK_INS_DIRECTORY_NAME}`;
+  const loggerGitIgnoreLine = LOGGER_FILE_PATH;
 
   if (!gitignoreContentLines.includes(generatedTypesDirectory)) {
     addLineToGitIgnore(
@@ -107,6 +109,15 @@ export function writeConfigFileAndUpdateGitIgnore(
       existingConfig?.generatedModelsDirectory
         ? `!${existingConfig.generatedModelsDirectory}/*/${HOOK_INS_DIRECTORY_NAME}`
         : undefined
+    );
+  }
+
+  if (!gitignoreContentLines.includes(loggerGitIgnoreLine)) {
+    addLineToGitIgnore(
+      gitignoreContentLines,
+      gitIgnoreLabelIndex,
+      loggerGitIgnoreLine,
+      existingConfig?.generatedModelsDirectory ? LOGGER_FILE_PATH : undefined
     );
   }
 
