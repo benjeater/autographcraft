@@ -227,6 +227,18 @@ The custom resolvers will be created based on each query and mutation, and will 
 
 Each of the custom resolvers will be typed based on the schema.  You can then implement the required logic in the custom resolver.
 
+## Other Readmes
+
+- [Configuration](./README-CONFIGURATION.md)
+- [Schema](./README-SCHEMA.md)
+- [Directive - @model](./README-DIRECTIVE-MODEL.md)
+- [Directive - @index](./README-DIRECTIVE-INDEX.md)
+- [Directive - @hasOne relationships](./README-DIRECTIVE-RELATIONSHIPS.md)
+- [Directive - @hasMany relationships](./README-DIRECTIVE-RELATIONSHIPS.md)
+- [Directive - @modelAuth](./README-DIRECTIVE-MODEL-AUTH.md)
+- [Directive - @fieldAuth](./README-DIRECTIVE-FIELD-AUTH.md)
+- [Hook-in Files](./README-HOOK-IN-FILES.md)
+
 ## Author
 
 👤 **Ben Jeater <benjeater+autographcraft@gmail.com>**

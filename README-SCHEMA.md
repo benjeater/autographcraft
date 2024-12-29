@@ -13,6 +13,7 @@ There are many directives available for the AutoGraphCraft schema files. The fol
 | `@hasOne` | Used to specify that the field is a one-to-one relationship with another type with an `@model` directive |
 | `@hasMany` | Used to specify that the field is a one-to-many relationship with another type with an `@model` directive |
 | `@modelAuth` | Used to specify the authorisation rules associated with the type |
+| `@fieldAuth` | Used to specify the authorisation rules associated with the a field |
 
 ### `@model`
 
@@ -33,3 +34,7 @@ See the [Relationship Directive Documentation](./README-DIRECTIVE-RELATIONSHIPS.
 ### `@modelAuth`
 
 See the [Model Auth Directive Documentation](./README-DIRECTIVE-MODEL-AUTH.md) for more information.
+
+### `@fieldAuth`
+
+See the [Field Auth Directive Documentation](./README-DIRECTIVE-FIELD-AUTH.md) for more information.
