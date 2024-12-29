@@ -5,13 +5,14 @@ import {
   MongoDbBaseResolver,
   type MongoDbBaseResolverParams,
 } from './MongoDbBaseResolver';
+import { removeUnauthorisedFieldsFromDocument } from '../../helpers';
 
 export type MongoDbCreateResolverParams<ArgType, ReturnType> =
   MongoDbBaseResolverParams<ArgType, ReturnType>;
 
 export class MongoDbCreateResolver<
   ArgType extends { input: Record<string, unknown> },
-  ReturnType
+  ReturnType,
 > extends MongoDbBaseResolver<ArgType, ReturnType> {
   constructor(params: MongoDbCreateResolverParams<ArgType, ReturnType>) {
     super(params);
@@ -96,14 +97,22 @@ export class MongoDbCreateResolver<
       ]);
 
       // Create the document in the database
-      const databaseDocumentInstance = await this._databaseModel.create(
-        databaseDocument
-      );
+      const databaseDocumentInstance =
+        await this._databaseModel.create(databaseDocument);
       databaseDocument = databaseDocumentInstance.toObject({
         virtuals: true,
       }) as ReturnType;
 
       await this.getAndRunHooks(HookInNames.POST_COMMIT, [databaseDocument]);
+
+      const permittedFields = await this._getPermittedFieldsForDocument(
+        this.context,
+        databaseDocument
+      );
+      databaseDocument = removeUnauthorisedFieldsFromDocument<ReturnType>(
+        databaseDocument,
+        permittedFields
+      );
 
       await this.getAndRunHooks(HookInNames.FINAL, [databaseDocument]);
 

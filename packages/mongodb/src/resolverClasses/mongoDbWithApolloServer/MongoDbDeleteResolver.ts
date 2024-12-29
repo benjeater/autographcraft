@@ -11,6 +11,7 @@ import {
   MongoDbBaseResolver,
   type MongoDbBaseResolverParams,
 } from './MongoDbBaseResolver';
+import { removeUnauthorisedFieldsFromDocument } from '../../helpers';
 
 export type MongoDbDeleteResolverParams<ArgType, ReturnType> =
   MongoDbBaseResolverParams<ArgType, ReturnType>;
@@ -21,7 +22,7 @@ export type MongoDbDeleteResolverParams<ArgType, ReturnType> =
  */
 export class MongoDbDeleteResolver<
   ArgType extends { id: string },
-  ReturnType
+  ReturnType,
 > extends MongoDbBaseResolver<ArgType, ReturnType> {
   constructor(params: MongoDbDeleteResolverParams<ArgType, ReturnType>) {
     super(params);
@@ -115,6 +116,15 @@ export class MongoDbDeleteResolver<
       }) as ReturnType;
 
       await this.getAndRunHooks(HookInNames.POST_COMMIT, [databaseDocument]);
+
+      const permittedFields = await this._getPermittedFieldsForDocument(
+        this.context,
+        databaseDocument
+      );
+      databaseDocument = removeUnauthorisedFieldsFromDocument<ReturnType>(
+        databaseDocument,
+        permittedFields
+      );
 
       await this.getAndRunHooks(HookInNames.FINAL, [databaseDocument]);
 

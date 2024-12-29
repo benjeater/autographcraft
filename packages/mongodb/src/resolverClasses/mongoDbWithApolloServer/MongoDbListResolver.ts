@@ -13,6 +13,7 @@ import {
   FilterConverterMongoDB,
   type FilterConverterMongoDBParams,
 } from '../filterConverter';
+import { removeUnauthorisedFieldsFromDocument } from '../../helpers';
 
 type ArgSort = {
   field: string;
@@ -49,7 +50,7 @@ type TemplateListReturnType<ReturnType> = {
 export class MongoDbListResolver<
   ArgType extends TemplateArgType,
   ReturnType,
-  ListReturnType extends TemplateListReturnType<ReturnType>
+  ListReturnType extends TemplateListReturnType<ReturnType>,
 > extends MongoDbBaseResolver<ArgType, ReturnType> {
   private getListFilter: (
     context: AutoGraphCraftResolverContext
@@ -145,9 +146,7 @@ export class MongoDbListResolver<
         databaseDocuments
       );
 
-      await this.getAndRunHooks(HookInNames.FINAL, databaseDocuments);
-
-      const results =
+      const documentObjects =
         databaseDocuments?.map(
           (doc) =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -156,9 +155,27 @@ export class MongoDbListResolver<
             }) as ReturnType
         ) || (null as ReturnType[] | null);
 
+      const results = await Promise.all(
+        documentObjects?.map(async (doc) => {
+          const permittedFields = await this._getPermittedFieldsForDocument(
+            this.context,
+            doc
+          );
+          const returnDocument =
+            await removeUnauthorisedFieldsFromDocument<ReturnType>(
+              doc,
+              permittedFields
+            );
+
+          return returnDocument;
+        }) || []
+      );
+
+      await this.getAndRunHooks(HookInNames.FINAL, results);
+
       const returnObject = {
         results,
-        nextToken: this.getReturnNextToken(results),
+        nextToken: this.getReturnNextToken(documentObjects),
       } as ListReturnType;
 
       return returnObject;

@@ -26,6 +26,10 @@ export type MongoDbBaseResolverParams<ArgType, ReturnType> = {
     context: AutoGraphCraftResolverContext,
     document: ReturnType
   ) => Promise<boolean>;
+  getPermittedFieldsForDocument: (
+    context: AutoGraphCraftResolverContext,
+    document: ReturnType
+  ) => Promise<Set<string>>;
 };
 
 const QUERY_RESOLVER_NAMES = [RESOLVER_NAME.READ, RESOLVER_NAME.LIST];
@@ -56,6 +60,10 @@ export class MongoDbBaseResolver<ArgType, ReturnType> {
     context: AutoGraphCraftResolverContext,
     document: ReturnType
   ) => Promise<boolean>;
+  protected _getPermittedFieldsForDocument: (
+    context: AutoGraphCraftResolverContext,
+    document: ReturnType
+  ) => Promise<Set<string>>;
 
   constructor(params: MongoDbBaseResolverParams<ArgType, ReturnType>) {
     this.parent = params.parent;
@@ -67,6 +75,7 @@ export class MongoDbBaseResolver<ArgType, ReturnType> {
     this.hookInFiles = params.hookInFiles;
     this._architecturalAuthorisation = params.architecturalAuthorisation;
     this._documentAuthorisation = params.documentAuthorisation;
+    this._getPermittedFieldsForDocument = params.getPermittedFieldsForDocument;
   }
 
   async getAndRunHooks(

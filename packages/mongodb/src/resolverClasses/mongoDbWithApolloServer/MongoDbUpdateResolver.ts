@@ -12,13 +12,14 @@ import {
   MongoDbBaseResolver,
   type MongoDbBaseResolverParams,
 } from './MongoDbBaseResolver';
+import { removeUnauthorisedFieldsFromDocument } from '../../helpers';
 
 export type MongoDbUpdateResolverParams<ArgType, ReturnType> =
   MongoDbBaseResolverParams<ArgType, ReturnType>;
 
 export class MongoDbUpdateResolver<
   ArgType extends { input: Record<string, unknown> },
-  ReturnType
+  ReturnType,
 > extends MongoDbBaseResolver<ArgType, ReturnType> {
   constructor(params: MongoDbUpdateResolverParams<ArgType, ReturnType>) {
     super(params);
@@ -118,6 +119,15 @@ export class MongoDbUpdateResolver<
       await this.getAndRunHooks(HookInNames.POST_COMMIT, [
         databaseDocument as ReturnType,
       ]);
+
+      const permittedFields = await this._getPermittedFieldsForDocument(
+        this.context,
+        databaseDocument as ReturnType
+      );
+      databaseDocument = removeUnauthorisedFieldsFromDocument<ReturnType>(
+        databaseDocument as ReturnType,
+        permittedFields
+      );
 
       await this.getAndRunHooks(HookInNames.FINAL, [
         databaseDocument as ReturnType,
