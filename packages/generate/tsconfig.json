@@ -16,6 +16,7 @@
     "emitDeclarationOnly": false,
     "sourceMap": false,
     "moduleResolution": "bundler",
+    "composite": true,
     "paths": {
       "@autographcraft/*": ["../*/src/app"]
     }

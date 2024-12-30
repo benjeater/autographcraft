@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { DocumentNode } from 'graphql';
+import type { DocumentNode } from 'graphql';
 import mongoose from 'mongoose';
 import { HookInNames } from '../constants';
 

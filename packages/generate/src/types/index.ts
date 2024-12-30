@@ -5,3 +5,4 @@ export {
   type ProcessArgumentVector,
   PROCESS_ARGUMENT_VECTOR_CODES,
 } from './FunctionCalls';
+export type { LastRequestStrings } from './PreviousRequest';
