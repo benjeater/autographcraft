@@ -11,5 +11,10 @@
     "sourceMap": false,
     "isolatedModules": true,
     "types": ["node"]
-  }
+  },
+  "references": [
+    {
+      "path": "../core/tsconfig.buildcjs.json"
+    }
+  ]
 }
