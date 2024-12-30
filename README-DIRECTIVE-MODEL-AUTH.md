@@ -1,5 +1,11 @@
 # `@modelAuth` Directive Documentation
 
+- [`@modelAuth` Directive Documentation](#modelauth-directive-documentation)
+  - [Directive Specification](#directive-specification)
+  - [Setting up Authorising Models](#setting-up-authorising-models)
+  - [Usage](#usage)
+  - [Special Authorising Models](#special-authorising-models)
+
 The `@modelAuth` directive is used to specify the authorisation rules associated with the type.  This directive is used in conjunction with the `authorisationStructure` settings in the `autographcraft.config.js` file.
 
 This documentation is created for the purpose of explaining the functionality of the `@modelAuth` directive and should not be considered a guide on best practice for authorisation within your application.
@@ -119,3 +125,32 @@ This `@modelAuth` directive defines that the caller must be signed into the appl
 This `@modelAuth` directive defines that a `User` is the only caller who can edit (`update`, `delete`) their details in the database.
 
 You will notice that there is no `create` method available on the `User` model via the `@modelAuth` directives.  This is because it would not make sense for a user to be able create themselves.  Creation of `User`s would need to be done directly to the database via another method (such as the sign-up process).
+
+## Special Authorising Models
+
+There are three (3) special authorising models that can be used with the `@modelAuth` directive:
+
+- `public`: This authorising model allows anyone to access the model.
+- `signedIn`: This authorising model allows signed-in users to access the model.
+- `admin`: This authorising model allows users with the `isAdmin` flag set to `true` on the context object to access the model.
+
+You cannot use these model names as the name of a model in the `autographcraft.config.js` file or as the name of a type in the schema.
+
+These special authorising models can be used in the `authorisingModel` parameter of the `@modelAuth` directive and must be done so without the `idField` parameter.
+
+```graphql
+@modelAuth(
+  authorisingModel: "public"
+  methods: [read, list]
+)
+
+@modelAuth(
+  authorisingModel: "signedIn"
+  methods: [read, list]
+)
+
+@modelAuth(
+  authorisingModel: "admin"
+  methods: [all]
+)
+```

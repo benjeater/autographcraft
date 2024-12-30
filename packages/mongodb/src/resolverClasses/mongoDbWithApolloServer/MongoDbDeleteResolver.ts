@@ -32,9 +32,14 @@ export class MongoDbDeleteResolver<
     let databaseDocument: ReturnType | null = null;
 
     try {
-      await this.getAndRunHooks(HookInNames.INITIAL, databaseDocument);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.DELETE,
+        HookInNames.INITIAL,
+        databaseDocument
+      );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.DELETE,
         HookInNames.PRE_VALIDATE_ARGS,
         databaseDocument
       );
@@ -47,11 +52,13 @@ export class MongoDbDeleteResolver<
       }
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.DELETE,
         HookInNames.POST_VALIDATE_ARGS,
         databaseDocument
       );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.DELETE,
         HookInNames.PRE_ARCHITECTURAL_AUTHORIZE,
         databaseDocument
       );
@@ -67,11 +74,16 @@ export class MongoDbDeleteResolver<
       }
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.DELETE,
         HookInNames.POST_ARCHITECTURAL_AUTHORIZE,
         databaseDocument
       );
 
-      await this.getAndRunHooks(HookInNames.PRE_FETCH, databaseDocument);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.DELETE,
+        HookInNames.PRE_FETCH,
+        databaseDocument
+      );
 
       // Fetch the data from the database
       const filter = { _id: this.args.id, deletedAt: null };
@@ -83,11 +95,15 @@ export class MongoDbDeleteResolver<
         );
       }
 
-      await this.getAndRunHooks(HookInNames.POST_FETCH, [databaseDocument]);
-
-      await this.getAndRunHooks(HookInNames.PRE_DOCUMENT_AUTHORIZE, [
+      await this.getAndRunHooks(RESOLVER_NAME.DELETE, HookInNames.POST_FETCH, [
         databaseDocument,
       ]);
+
+      await this.getAndRunHooks(
+        RESOLVER_NAME.DELETE,
+        HookInNames.PRE_DOCUMENT_AUTHORIZE,
+        [databaseDocument]
+      );
 
       // Call the authorization service to check if client has permissions
       // for the specific document being accessed
@@ -101,11 +117,15 @@ export class MongoDbDeleteResolver<
         );
       }
 
-      await this.getAndRunHooks(HookInNames.POST_DOCUMENT_AUTHORIZE, [
+      await this.getAndRunHooks(
+        RESOLVER_NAME.DELETE,
+        HookInNames.POST_DOCUMENT_AUTHORIZE,
+        [databaseDocument]
+      );
+
+      await this.getAndRunHooks(RESOLVER_NAME.DELETE, HookInNames.PRE_COMMIT, [
         databaseDocument,
       ]);
-
-      await this.getAndRunHooks(HookInNames.PRE_COMMIT, [databaseDocument]);
 
       // Delete the document from the database
       const update = { deletedAt: new Date() };
@@ -115,7 +135,9 @@ export class MongoDbDeleteResolver<
         virtuals: true,
       }) as ReturnType;
 
-      await this.getAndRunHooks(HookInNames.POST_COMMIT, [databaseDocument]);
+      await this.getAndRunHooks(RESOLVER_NAME.DELETE, HookInNames.POST_COMMIT, [
+        databaseDocument,
+      ]);
 
       const permittedFields = await this._getPermittedFieldsForDocument(
         this.context,
@@ -126,7 +148,9 @@ export class MongoDbDeleteResolver<
         permittedFields
       );
 
-      await this.getAndRunHooks(HookInNames.FINAL, [databaseDocument]);
+      await this.getAndRunHooks(RESOLVER_NAME.DELETE, HookInNames.FINAL, [
+        databaseDocument,
+      ]);
 
       return databaseDocument;
     } catch (err) {
@@ -138,6 +162,7 @@ export class MongoDbDeleteResolver<
 
       // Run all the error hooks
       await this.getAndRunHooks(
+        RESOLVER_NAME.DELETE,
         HookInNames.ERROR,
         databaseDocument ? [databaseDocument] : null
       );

@@ -73,19 +73,26 @@ export class MongoDbListResolver<
         this.args.filter.deletedAt = { eq: null };
       }
 
-      await this.getAndRunHooks(HookInNames.INITIAL, databaseDocuments);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
+        HookInNames.INITIAL,
+        databaseDocuments
+      );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
         HookInNames.PRE_VALIDATE_ARGS,
         databaseDocuments
       );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
         HookInNames.POST_VALIDATE_ARGS,
         databaseDocuments
       );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
         HookInNames.PRE_ARCHITECTURAL_AUTHORIZE,
         databaseDocuments
       );
@@ -101,11 +108,16 @@ export class MongoDbListResolver<
       }
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
         HookInNames.POST_ARCHITECTURAL_AUTHORIZE,
         databaseDocuments
       );
 
-      await this.getAndRunHooks(HookInNames.PRE_FETCH, databaseDocuments);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
+        HookInNames.PRE_FETCH,
+        databaseDocuments
+      );
 
       // Have auth converted to a filter
       const argsFilter = this.convertArgsToFilter();
@@ -134,14 +146,20 @@ export class MongoDbListResolver<
         this.getQueryOptions()
       )) as ReturnType[] | null;
 
-      await this.getAndRunHooks(HookInNames.POST_FETCH, databaseDocuments);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
+        HookInNames.POST_FETCH,
+        databaseDocuments
+      );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
         HookInNames.PRE_DOCUMENT_AUTHORIZE,
         databaseDocuments
       );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
         HookInNames.POST_DOCUMENT_AUTHORIZE,
         databaseDocuments
       );
@@ -171,7 +189,7 @@ export class MongoDbListResolver<
         }) || []
       );
 
-      await this.getAndRunHooks(HookInNames.FINAL, results);
+      await this.getAndRunHooks(RESOLVER_NAME.LIST, HookInNames.FINAL, results);
 
       const returnObject = {
         results,
@@ -187,7 +205,11 @@ export class MongoDbListResolver<
       }
 
       // Run all the error hooks
-      await this.getAndRunHooks(HookInNames.ERROR, databaseDocuments);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.LIST,
+        HookInNames.ERROR,
+        databaseDocuments
+      );
 
       // If the error is not a GraphQLError, throw a generic error wrapped in a GraphQLError
       if (!(err instanceof GraphQLError)) {
