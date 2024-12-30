@@ -2,9 +2,25 @@
   "name": "@autographcraft/mongodb",
   "version": "1.1.4",
   "description": "The MongoDB resolver plugin for AutoGraphCraft",
-  "main": "dist/app.js",
-  "types": "dist/app",
-  "type": "commonjs",
+  "main": "./dist/commonjs/app.js",
+  "module": "./dist/esm/app.js",
+  "types": "./dist/commonjs/app",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    "./README.md": "./README.md",
+    "./README-*.md": "./README-*.md",
+    ".": {
+      "import": {
+        "types": "./dist/esm/app.d.ts",
+        "default": "./dist/esm/app.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/app.d.ts",
+        "default": "./dist/commonjs/app.js"
+      }
+    }
+  },
   "files": [
     "README.md",
     "README-*.md",
@@ -12,16 +28,14 @@
   ],
   "scripts": {
     "clean": "rm -rf dist/*",
-    "compile": "tsc -p tsconfig.build.json && tsc-alias",
+    "compile": "tsc -b tsconfig.buildesm.json && tsc -b tsconfig.buildcjs.json && tsc-alias",
     "test": "jest",
     "testW": "jest --watch",
-    "bump": "npm version prerelease --no-git-tag-version",
-    "bumpPatch": "npm version patch",
     "prepack": "npm run compile && jest",
     "build": "npm run compile",
-    "start": "npm run compile && dotenvx run --quiet -- node dist/app.js",
-    "startHot": "npm run compile && dotenvx run --quiet -- nodemon -q dist/app.js",
-    "startVerbose": "npm run compile && dotenvx run -- nodemon dist/app.js,",
+    "start": "npm run compile && dotenvx run --quiet -- node dist/esm/app.js",
+    "startHot": "npm run compile && dotenvx run --quiet -- nodemon -q dist/esm/app.js",
+    "startVerbose": "npm run compile && dotenvx run -- nodemon dist/esm/app.js,",
     "lint": "eslint"
   },
   "author": "Ben Jeater <benjeater+autographcraft@gmail.com>",
