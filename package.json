@@ -12,7 +12,7 @@
     "copyOtherReadMes": "for dir in packages/*; do cp README-*.md \"$dir/\"; done",
     "copyExamples": "for dir in packages/*; do cp -r examples \"$dir/\"; done",
     "copyFiles": "npm run copyBaseReadMe && npm run copyOtherReadMes && npm run copyExamples",
-    "publishAll": "npm version patch -ws && npm run copyFiles && npm publish -w=packages/core && npm publish -w=packages/generate && npm publish -w=packages/mongodb",
+    "publishAll": "npm run clean -ws && npm run copyFiles && npm publish -w=packages/core && npm publish -w=packages/generate && npm publish -w=packages/mongodb",
     "generate": "npm run build -w=packages/core && npx autographcraft generate"
   },
   "ts-node": {

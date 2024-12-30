@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ES2015",
+    "moduleResolution": "node",
+    "rootDir": "./src",
+    "outDir": "./dist/esm",
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "sourceMap": false,
+    "isolatedModules": true,
+    "types": ["node"]
+  }
+}
