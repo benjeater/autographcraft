@@ -24,6 +24,16 @@ export class MongoDbCreateResolver<
     try {
       await this.getAndRunHooks(HookInNames.INITIAL, databaseDocument);
 
+      // Remove the unauthorised fields from the input object
+      const permittedFieldsForInput = await this._getPermittedFieldsForDocument(
+        this.context,
+        this.args.input as ReturnType
+      );
+      this.args.input = removeUnauthorisedFieldsFromDocument<ReturnType>(
+        this.args.input as ReturnType,
+        permittedFieldsForInput
+      ) as ArgType['input'];
+
       await this.getAndRunHooks(
         HookInNames.PRE_VALIDATE_ARGS,
         databaseDocument

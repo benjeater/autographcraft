@@ -29,7 +29,7 @@ async function main() {
     mongooseConnection,
     logger: console,
     config,
-    authInitialisationData: { User: '673c462c7e4a338bdee980c8' },
+    authInitialisationData: { User: 'aaaabbbbccccddddeeeeffff' },
     isAdmin: false,
   };
 

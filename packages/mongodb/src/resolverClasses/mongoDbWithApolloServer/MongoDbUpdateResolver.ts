@@ -102,6 +102,16 @@ export class MongoDbUpdateResolver<
         databaseDocument,
       ]);
 
+      // Remove the unauthorised fields from the input object
+      const permittedFieldsForInput = await this._getPermittedFieldsForDocument(
+        this.context,
+        databaseDocument
+      );
+      this.args.input = removeUnauthorisedFieldsFromDocument<ReturnType>(
+        this.args.input as ReturnType,
+        permittedFieldsForInput
+      ) as ArgType['input'];
+
       // Merge the input data with the existing data
       const updatedDocumentInstance =
         this.mergeInputWithDatabaseDocument(databaseDocument);
