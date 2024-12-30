@@ -1,6 +1,6 @@
 {
   "name": "@autographcraft/generate",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "description": "The generate application for AutoGraphCraft",
   "bin": {
     "autographcraft": "dist/commonjs/app.js"
@@ -42,10 +42,13 @@
     "lint": "eslint"
   },
   "author": "Ben Jeater <benjeater+autographcraft@gmail.com>",
-  "repository": "https://github.com/benjeater/autographcraft",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjeater/autographcraft.git"
+  },
   "license": "MIT",
   "dependencies": {
-    "@autographcraft/core": "^1.1.3",
+    "@autographcraft/core": "^1.2.0",
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/plugin-helpers": "^5.1.0",
     "@graphql-codegen/typescript": "4.1.1",

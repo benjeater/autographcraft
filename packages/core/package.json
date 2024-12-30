@@ -1,6 +1,6 @@
 {
   "name": "@autographcraft/core",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "The core application for AutoGraphCraft",
   "main": "./dist/commonjs/app.js",
   "module": "./dist/esm/app.js",
@@ -40,7 +40,10 @@
   },
   "author": "Ben Jeater <benjeater+autographcraft@gmail.com>",
   "license": "MIT",
-  "repository": "https://github.com/benjeater/autographcraft",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjeater/autographcraft.git"
+  },
   "dependencies": {
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/typescript": "4.1.1",

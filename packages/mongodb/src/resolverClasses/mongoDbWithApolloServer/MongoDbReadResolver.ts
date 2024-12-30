@@ -11,6 +11,7 @@ import {
   MongoDbBaseResolver,
   type MongoDbBaseResolverParams,
 } from './MongoDbBaseResolver';
+import { removeUnauthorisedFieldsFromDocument } from '../../helpers';
 
 export type MongoDbReadResolverParams<ArgType, ReturnType> =
   MongoDbBaseResolverParams<ArgType, ReturnType>;
@@ -21,7 +22,7 @@ export type MongoDbReadResolverParams<ArgType, ReturnType> =
  */
 export class MongoDbReadResolver<
   ArgType extends { id: string },
-  ReturnType
+  ReturnType,
 > extends MongoDbBaseResolver<ArgType, ReturnType> {
   constructor(params: MongoDbReadResolverParams<ArgType, ReturnType>) {
     super(params);
@@ -109,12 +110,21 @@ export class MongoDbReadResolver<
         databaseDocument,
       ]);
 
-      await this.getAndRunHooks(HookInNames.FINAL, [databaseDocument]);
-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const returnDocument = (databaseDocument as any).toObject({
+      let returnDocument = (databaseDocument as any).toObject({
         virtuals: true,
       });
+
+      const permittedFields = await this._getPermittedFieldsForDocument(
+        this.context,
+        databaseDocument
+      );
+      returnDocument = removeUnauthorisedFieldsFromDocument<ReturnType>(
+        returnDocument,
+        permittedFields
+      );
+
+      await this.getAndRunHooks(HookInNames.FINAL, [databaseDocument]);
       return returnDocument;
     } catch (err) {
       if (err instanceof Error) {

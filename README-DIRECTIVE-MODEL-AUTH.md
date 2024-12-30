@@ -2,7 +2,7 @@
 
 The `@modelAuth` directive is used to specify the authorisation rules associated with the type.  This directive is used in conjunction with the `authorisationStructure` settings in the `autographcraft.config.js` file.
 
-This documentation is created for the purpose of explaining the functionality of the `@modelAuth` directive and should not be considered best practice for authorisation within your application.
+This documentation is created for the purpose of explaining the functionality of the `@modelAuth` directive and should not be considered a guide on best practice for authorisation within your application.
 
 ## Directive Specification
 
