@@ -80,7 +80,8 @@ export async function fetchMergedTypeDefs(
   logger.info(`Schema files successfully fetched and merged`);
 
   return {
-    typeDefs: mergedTypeDefs,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    typeDefs: mergedTypeDefs as any,
     printableTypeDefs,
   };
 }

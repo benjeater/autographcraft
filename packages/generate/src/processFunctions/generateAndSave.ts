@@ -4,7 +4,12 @@ import {
   getFilesFromResponse,
 } from '../helpers';
 import { logger } from '@autographcraft/core';
-import { printStatistics, type PrintStatisticsParams } from './helpers';
+import {
+  checkIfSameAsPreviousRequest,
+  printStatistics,
+  savePreviousRequest,
+  type PrintStatisticsParams,
+} from './helpers';
 import {
   fetchMergedTypeDefs,
   getAuthIdToken,
@@ -33,18 +38,31 @@ export async function generateAndSave(
     process.exit(1);
   }
 
-  // Get the auth token to call the API with
-  const authIdToken = await getAuthIdToken();
-
-  // Start the timer
-  const startTime = process.hrtime.bigint();
-
   // Get joined schema
   const schema = await fetchMergedTypeDefs(
     currentWorkingDirectory,
     existingConfig,
     [] // custom scalars
   );
+
+  // Check if this request is the same as the previous request
+  const isSameAsPreviousRequest = checkIfSameAsPreviousRequest(
+    params,
+    existingConfig,
+    schema
+  );
+  if (isSameAsPreviousRequest) {
+    logger.info(
+      'ℹ️ No changes detected, no files will be written. Use `--force` to force a new generation'
+    );
+    return;
+  }
+
+  // Get the auth token to call the API with
+  const authIdToken = await getAuthIdToken();
+
+  // Start the timer
+  const startTime = process.hrtime.bigint();
 
   // Send schema to autographcraft API
   const apiResponse = await getAutoGraphCraftApiResponse(
@@ -67,6 +85,9 @@ export async function generateAndSave(
 
   // Save all files to the correct location
   writeFilesToFileSystem(allFiles, isDryRun);
+
+  // Write the last request to the file system
+  savePreviousRequest(existingConfig, schema);
 
   // Give user some statistics
   const printStatisticsParams: PrintStatisticsParams = {

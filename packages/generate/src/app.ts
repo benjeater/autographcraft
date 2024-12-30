@@ -35,6 +35,7 @@ export async function main() {
     }
     await processFunctionToRun(currentWorkingDirectory, params);
     logger.end();
+    return;
   }
 
   logger.warn(

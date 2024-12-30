@@ -15,6 +15,7 @@
   - [Specifying the Schema](#specifying-the-schema)
   - [Implementing the Generated Output](#implementing-the-generated-output)
   - [Custom Resolvers](#custom-resolvers)
+- [Other Readmes](#other-readmes)
 - [Author](#author)
 - [Show your support](#show-your-support)
 
@@ -87,6 +88,12 @@ npx autographcraft generate
 ```
 
 This will collect all the generation information and call the AutoGraphCraft API to generate the required files.  If you are not signed in, you will be directed to sign in or sign up to the AutoGraphCraft platform in your browser.
+
+The generation process will only request the generation of the files if the schema or configuration has changed since it was last run.  This is to prevent unnecessary generation of files and delays in the build process.  If you wish to generate the files again without making any changes, you can use the `--force` flag:
+
+```sh
+npx autographcraft generate --force
+```
 
 ### Implement the Package
 

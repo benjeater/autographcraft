@@ -5,6 +5,7 @@ import {
 
 export const STORED_DETAILS_DIR_NAME = '.autographcraft' as const;
 export const TOKEN_FILE_NAME = 'token' as const;
+export const LAST_REQUEST_FILE_NAME = 'lastRequest' as const;
 
 export const SIGN_IN_URL = 'https://autographcraft.com/auth/signin' as const;
 export const AUTOGRAPHCRAFT_API_URL =

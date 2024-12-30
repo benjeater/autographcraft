@@ -15,6 +15,7 @@
     "baseUrl": ".",
     "emitDeclarationOnly": false,
     "sourceMap": false,
+    "composite": true,
     "paths": {
       "@autographcraft/*": ["../*/src/app"]
     }
