@@ -37,9 +37,14 @@ export class MongoDbReadResolver<
     let databaseDocument: ReturnType | null = null;
 
     try {
-      await this.getAndRunHooks(HookInNames.INITIAL, databaseDocument);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.READ,
+        HookInNames.INITIAL,
+        databaseDocument
+      );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.READ,
         HookInNames.PRE_VALIDATE_ARGS,
         databaseDocument
       );
@@ -52,11 +57,13 @@ export class MongoDbReadResolver<
       }
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.READ,
         HookInNames.POST_VALIDATE_ARGS,
         databaseDocument
       );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.READ,
         HookInNames.PRE_ARCHITECTURAL_AUTHORIZE,
         databaseDocument
       );
@@ -72,11 +79,16 @@ export class MongoDbReadResolver<
       }
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.READ,
         HookInNames.POST_ARCHITECTURAL_AUTHORIZE,
         databaseDocument
       );
 
-      await this.getAndRunHooks(HookInNames.PRE_FETCH, databaseDocument);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.READ,
+        HookInNames.PRE_FETCH,
+        databaseDocument
+      );
 
       // Fetch the data from the database
       databaseDocument = await this._databaseModel.findById<ReturnType>(
@@ -88,11 +100,15 @@ export class MongoDbReadResolver<
         );
       }
 
-      await this.getAndRunHooks(HookInNames.POST_FETCH, [databaseDocument]);
-
-      await this.getAndRunHooks(HookInNames.PRE_DOCUMENT_AUTHORIZE, [
+      await this.getAndRunHooks(RESOLVER_NAME.READ, HookInNames.POST_FETCH, [
         databaseDocument,
       ]);
+
+      await this.getAndRunHooks(
+        RESOLVER_NAME.READ,
+        HookInNames.PRE_DOCUMENT_AUTHORIZE,
+        [databaseDocument]
+      );
 
       // Call the authorization service to check if client has permissions
       // for the specific document being accessed
@@ -106,9 +122,11 @@ export class MongoDbReadResolver<
         );
       }
 
-      await this.getAndRunHooks(HookInNames.POST_DOCUMENT_AUTHORIZE, [
-        databaseDocument,
-      ]);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.READ,
+        HookInNames.POST_DOCUMENT_AUTHORIZE,
+        [databaseDocument]
+      );
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let returnDocument = (databaseDocument as any).toObject({
@@ -124,7 +142,9 @@ export class MongoDbReadResolver<
         permittedFields
       );
 
-      await this.getAndRunHooks(HookInNames.FINAL, [databaseDocument]);
+      await this.getAndRunHooks(RESOLVER_NAME.READ, HookInNames.FINAL, [
+        databaseDocument,
+      ]);
       return returnDocument;
     } catch (err) {
       if (err instanceof Error) {
@@ -135,6 +155,7 @@ export class MongoDbReadResolver<
 
       // Run all the error hooks
       await this.getAndRunHooks(
+        RESOLVER_NAME.READ,
         HookInNames.ERROR,
         databaseDocument ? [databaseDocument] : null
       );

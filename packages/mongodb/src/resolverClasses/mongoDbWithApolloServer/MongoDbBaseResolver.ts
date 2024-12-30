@@ -79,10 +79,11 @@ export class MongoDbBaseResolver<ArgType, ReturnType> {
   }
 
   async getAndRunHooks(
+    resolverName: RESOLVER_NAME,
     hookPoint: HookInNames,
     databaseDocuments: ReturnType[] | null
   ): Promise<void> {
-    const hookIns = this.getHookIns(RESOLVER_NAME.READ, hookPoint);
+    const hookIns = this.getHookIns(resolverName, hookPoint);
     this.context.autographcraft.logger?.debug({
       [`${hookPoint}Hooks`]: hookIns,
     });

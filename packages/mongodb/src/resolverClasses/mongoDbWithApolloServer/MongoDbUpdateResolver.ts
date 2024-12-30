@@ -29,9 +29,14 @@ export class MongoDbUpdateResolver<
     let databaseDocument: ReturnType | null = null;
 
     try {
-      await this.getAndRunHooks(HookInNames.INITIAL, databaseDocument);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
+        HookInNames.INITIAL,
+        databaseDocument
+      );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
         HookInNames.PRE_VALIDATE_ARGS,
         databaseDocument
       );
@@ -44,11 +49,13 @@ export class MongoDbUpdateResolver<
       }
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
         HookInNames.POST_VALIDATE_ARGS,
         databaseDocument
       );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
         HookInNames.PRE_ARCHITECTURAL_AUTHORIZE,
         databaseDocument
       );
@@ -64,11 +71,16 @@ export class MongoDbUpdateResolver<
       }
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
         HookInNames.POST_ARCHITECTURAL_AUTHORIZE,
         databaseDocument
       );
 
-      await this.getAndRunHooks(HookInNames.PRE_FETCH, databaseDocument);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
+        HookInNames.PRE_FETCH,
+        databaseDocument
+      );
 
       // Fetch the data from the database
       const filter = { _id: this.args.input.id, deletedAt: null };
@@ -80,11 +92,15 @@ export class MongoDbUpdateResolver<
         );
       }
 
-      await this.getAndRunHooks(HookInNames.POST_FETCH, [databaseDocument]);
-
-      await this.getAndRunHooks(HookInNames.PRE_DOCUMENT_AUTHORIZE, [
+      await this.getAndRunHooks(RESOLVER_NAME.UPDATE, HookInNames.POST_FETCH, [
         databaseDocument,
       ]);
+
+      await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
+        HookInNames.PRE_DOCUMENT_AUTHORIZE,
+        [databaseDocument]
+      );
 
       // Call the authorization service to check if client has permissions
       // for the specific document being accessed
@@ -98,9 +114,11 @@ export class MongoDbUpdateResolver<
         );
       }
 
-      await this.getAndRunHooks(HookInNames.POST_DOCUMENT_AUTHORIZE, [
-        databaseDocument,
-      ]);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
+        HookInNames.POST_DOCUMENT_AUTHORIZE,
+        [databaseDocument]
+      );
 
       // Remove the unauthorised fields from the input object
       const permittedFieldsForInput = await this._getPermittedFieldsForDocument(
@@ -116,7 +134,7 @@ export class MongoDbUpdateResolver<
       const updatedDocumentInstance =
         this.mergeInputWithDatabaseDocument(databaseDocument);
 
-      await this.getAndRunHooks(HookInNames.PRE_COMMIT, [
+      await this.getAndRunHooks(RESOLVER_NAME.UPDATE, HookInNames.PRE_COMMIT, [
         updatedDocumentInstance as ReturnType,
       ]);
 
@@ -126,7 +144,7 @@ export class MongoDbUpdateResolver<
         virtuals: true,
       });
 
-      await this.getAndRunHooks(HookInNames.POST_COMMIT, [
+      await this.getAndRunHooks(RESOLVER_NAME.UPDATE, HookInNames.POST_COMMIT, [
         databaseDocument as ReturnType,
       ]);
 
@@ -139,7 +157,7 @@ export class MongoDbUpdateResolver<
         permittedFields
       );
 
-      await this.getAndRunHooks(HookInNames.FINAL, [
+      await this.getAndRunHooks(RESOLVER_NAME.UPDATE, HookInNames.FINAL, [
         databaseDocument as ReturnType,
       ]);
 
@@ -153,6 +171,7 @@ export class MongoDbUpdateResolver<
 
       // Run all the error hooks
       await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
         HookInNames.ERROR,
         databaseDocument ? [databaseDocument] : null
       );

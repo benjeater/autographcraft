@@ -22,7 +22,11 @@ export class MongoDbCreateResolver<
     let databaseDocument: ReturnType | null = null;
 
     try {
-      await this.getAndRunHooks(HookInNames.INITIAL, databaseDocument);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
+        HookInNames.INITIAL,
+        databaseDocument
+      );
 
       // Remove the unauthorised fields from the input object
       const permittedFieldsForInput = await this._getPermittedFieldsForDocument(
@@ -35,6 +39,7 @@ export class MongoDbCreateResolver<
       ) as ArgType['input'];
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
         HookInNames.PRE_VALIDATE_ARGS,
         databaseDocument
       );
@@ -42,11 +47,13 @@ export class MongoDbCreateResolver<
       // No arg validation is required for create
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
         HookInNames.POST_VALIDATE_ARGS,
         databaseDocument
       );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
         HookInNames.PRE_ARCHITECTURAL_AUTHORIZE,
         databaseDocument
       );
@@ -62,11 +69,13 @@ export class MongoDbCreateResolver<
       }
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
         HookInNames.POST_ARCHITECTURAL_AUTHORIZE,
         databaseDocument
       );
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
         HookInNames.PRE_DOCUMENT_AUTHORIZE,
         databaseDocument
       );
@@ -84,6 +93,7 @@ export class MongoDbCreateResolver<
       }
 
       await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
         HookInNames.POST_DOCUMENT_AUTHORIZE,
         databaseDocument
       );
@@ -91,29 +101,34 @@ export class MongoDbCreateResolver<
       // Convert the args to an instance of the database model
       const documentInstance = new this._databaseModel(this.args.input);
 
-      await this.getAndRunHooks(HookInNames.PRE_VALIDATE_DOCUMENT, [
-        documentInstance as ReturnType,
-      ]);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
+        HookInNames.PRE_VALIDATE_DOCUMENT,
+        [documentInstance as ReturnType]
+      );
 
       // Validate the document
       await documentInstance.validate();
 
-      await this.getAndRunHooks(HookInNames.POST_VALIDATE_DOCUMENT, [
-        documentInstance as ReturnType,
-      ]);
+      await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
+        HookInNames.POST_VALIDATE_DOCUMENT,
+        [documentInstance as ReturnType]
+      );
 
-      await this.getAndRunHooks(HookInNames.PRE_COMMIT, [
+      await this.getAndRunHooks(RESOLVER_NAME.CREATE, HookInNames.PRE_COMMIT, [
         documentInstance as ReturnType,
       ]);
 
       // Create the document in the database
-      const databaseDocumentInstance =
-        await this._databaseModel.create(databaseDocument);
+      const databaseDocumentInstance = await documentInstance.save();
       databaseDocument = databaseDocumentInstance.toObject({
         virtuals: true,
       }) as ReturnType;
 
-      await this.getAndRunHooks(HookInNames.POST_COMMIT, [databaseDocument]);
+      await this.getAndRunHooks(RESOLVER_NAME.CREATE, HookInNames.POST_COMMIT, [
+        databaseDocument,
+      ]);
 
       const permittedFields = await this._getPermittedFieldsForDocument(
         this.context,
@@ -124,7 +139,9 @@ export class MongoDbCreateResolver<
         permittedFields
       );
 
-      await this.getAndRunHooks(HookInNames.FINAL, [databaseDocument]);
+      await this.getAndRunHooks(RESOLVER_NAME.CREATE, HookInNames.FINAL, [
+        databaseDocument,
+      ]);
 
       return databaseDocument;
     } catch (err) {
@@ -136,6 +153,7 @@ export class MongoDbCreateResolver<
 
       // Run all the error hooks
       await this.getAndRunHooks(
+        RESOLVER_NAME.CREATE,
         HookInNames.ERROR,
         databaseDocument ? [databaseDocument] : null
       );
