@@ -7,7 +7,7 @@
     "autographcraft": "dist/app.js"
   },
   "types": "dist/app",
-  "type": "module",
+  "type": "commonjs",
   "files": [
     "README.md",
     "README-*.md",
