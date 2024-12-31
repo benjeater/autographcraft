@@ -13,10 +13,13 @@
     "copyExamples": "for dir in packages/*; do cp -r examples \"$dir/\"; done",
     "copyFiles": "npm run copyBaseReadMe && npm run copyOtherReadMes && npm run copyExamples",
     "publishAll": "npm run clean -ws && npm run copyFiles && npm publish -w=packages/core && npm publish -w=packages/generate && npm publish -w=packages/mongodb",
-    "generate": "npm run clean -ws && npm run compile -ws && npx autographcraft generate"
+    "generate": "npm run compile -ws && npm install && npx autographcraft generate"
   },
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node"
+  },
+  "dependencies": {
+    "rimraf": "^6.0.1"
   }
 }

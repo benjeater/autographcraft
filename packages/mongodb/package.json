@@ -27,7 +27,7 @@
     "dist/**/*.*"
   ],
   "scripts": {
-    "clean": "rm -rf dist/*",
+    "clean": "rimraf dist",
     "compile": "tsc -b tsconfig.buildesm.json && tsc -b tsconfig.buildcjs.json && tsc-alias",
     "test": "jest",
     "testW": "jest --watch",
