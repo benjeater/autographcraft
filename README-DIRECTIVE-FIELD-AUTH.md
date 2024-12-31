@@ -63,6 +63,9 @@ On the specified model `User` there is a field called `userOnlyReadField`.  This
 
 The `@fieldAuth` directive specifies that only the `User` this model represents can read the `userOnlyReadField` field.  All other callers will receive `null` when querying this field.  Because this field is only readable by the `User` represented by the document, the field must be nullable so that the `null` value can be returned to other callers.
 
+> **&#9432; NOTE:**  
+> The `@fieldAuth` directive cannot be used on the `id` field of a model.  This is because the `id` field is mandatory and there must always be returned if any other field is returned from the requested database entry.
+
 Adding the `@fieldAuth` directive to a field will not affect the visibility of the field in the GraphQL schema.  The field will still be visible to all callers on the GraphQL introspection query, but only the authorised callers will be able to read or write to the field.
 
 Adding the `fieldAuth` directive to a field will remove the functionality of the `@modelAuth` directives on the type.  The `@fieldAuth` directive will take precedence over the `@modelAuth` directive.  This means that if a field has a `@fieldAuth` directive, the `@modelAuth` directives will be ignored for that field and any methods specified in the `@modelAuth` directive will not be available to the caller unless they are also specified in a `@fieldAuth` directive for the field.  For example:
