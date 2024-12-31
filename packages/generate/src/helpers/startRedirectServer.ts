@@ -1,6 +1,7 @@
 import http, { type ServerResponse } from 'node:http';
 import { parse } from 'node:url';
 import type { AuthTokens } from '../types';
+import { SUCCESS_HTML, FAILURE_HTML } from './redirectServer';
 
 /**
  * Starts a server to listen for the redirect from the auth provider
@@ -18,9 +19,7 @@ export async function startRedirectServer(
 
       if (!query.unique_ref || query.unique_ref !== uniqueRef) {
         res.writeHead(400, { 'Content-Type': 'text/html' });
-        res.write(
-          'Invalid request; unique_ref not found or did not match expected value'
-        );
+        res.write(FAILURE_HTML);
         res.end(); //end the response
         return;
       }
@@ -36,7 +35,7 @@ export async function startRedirectServer(
       }
 
       res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.write('Token saved successfully.  You may now close this window');
+      res.write(SUCCESS_HTML);
       res.end(); //end the response
     })
     .listen(freePort);
