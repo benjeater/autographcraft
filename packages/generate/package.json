@@ -41,7 +41,7 @@
     "startVerbose": "npm run compile && dotenvx run -- nodemon dist/esm/app.js,",
     "lint": "eslint"
   },
-  "author": "Ben Jeater <benjeater+autographcraft@gmail.com>",
+  "author": "Ben Jeater <hello@autographcraft.com>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/benjeater/autographcraft.git"

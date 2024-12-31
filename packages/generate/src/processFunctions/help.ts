@@ -1,6 +1,8 @@
+import open from 'open';
+
 /**
- * Logs the help file to the console
+ * Opens the documentation in the default browser
  */
 export async function help(): Promise<void> {
-  console.log('TODO: help file');
+  open(`https://github.com/benjeater/autographcraft#readme`);
 }
