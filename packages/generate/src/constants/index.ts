@@ -9,7 +9,7 @@ export const LAST_REQUEST_FILE_NAME = 'lastRequest' as const;
 
 export const SIGN_IN_URL = 'https://autographcraft.com/auth/signin' as const;
 export const AUTOGRAPHCRAFT_API_URL =
-  'https://api.autographcraft.com/graphql' as const;
+  'https://apiv1.autographcraft.com/graphql' as const;
 
 export const PROCESS_ARGUMENT_VECTORS: ProcessArgumentVector[] = [
   {
