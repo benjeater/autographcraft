@@ -1,7 +1,4 @@
-<h1 align="center">Welcome to AutoGraphCraft 👋</h1>
-<p>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0.2-blue.svg?cacheSeconds=2592000" />
-</p>
+<h1 align="center">Welcome to AutoGraphCraft</h1>
 
 - [Description](#description)
   - [Features](#features)
@@ -16,6 +13,7 @@
   - [Implementing the Generated Output](#implementing-the-generated-output)
   - [Custom Resolvers](#custom-resolvers)
 - [Other Readmes](#other-readmes)
+- [Getting Help](#getting-help)
 - [Author](#author)
 - [Show your support](#show-your-support)
 
@@ -246,9 +244,15 @@ Each of the custom resolvers will be typed based on the schema.  You can then im
 - [Directive - @fieldAuth](./README-DIRECTIVE-FIELD-AUTH.md)
 - [Hook-in Files](./README-HOOK-IN-FILES.md)
 
+## Getting Help
+
+For any non-security related bugs, questions, or comments, please use the [Issues](https://github.com/benjeater/autographcraft/issues) system in the GitHub Repository.
+
+For security disclosures, please email <security@autographcraft.com> with details of the issue and someone will get back to you in private.
+
 ## Author
 
-👤 **Ben Jeater <benjeater+autographcraft@gmail.com>**
+👤 **Ben Jeater <hello@autographcraft.com>**
 
 ## Show your support
 
