@@ -15,10 +15,8 @@ import {
   questionTargetGitIgnorePath,
   questionDatabaseType,
 } from './initFunctions/questions';
-import {
-  getExistingConfiguration,
-  writeConfigFileAndUpdateGitIgnore,
-} from './sharedFunctions';
+import { getExistingConfiguration } from '../helpers';
+import { writeConfigFileAndUpdateGitIgnore } from './sharedFunctions';
 import { additionalQuestionsDatabase } from './initFunctions/additionalQuestionsDatabase';
 
 /**

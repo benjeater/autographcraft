@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
 import { join } from 'path';
 import {
   DATABASE_CODES,
@@ -20,10 +21,14 @@ export async function getExistingConfiguration(
     currentWorkingDirectory,
     CONFIG_FILE_NAME
   );
-  if (!existsSync(existingConfigurationPath)) {
+  const existingConfigurationPathUrl = pathToFileURL(
+    existingConfigurationPath
+  ).href;
+
+  if (!existsSync(existingConfigurationPathUrl)) {
     return undefined;
   }
-  const existingConfigContent = await import(existingConfigurationPath);
+  const existingConfigContent = await import(existingConfigurationPathUrl);
   const existingConfig = existingConfigContent.default;
 
   validateGeneratedTypesDirectory(existingConfig);
