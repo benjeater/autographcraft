@@ -1,4 +1,4 @@
-import { getExistingConfiguration } from './sharedFunctions';
+import { getExistingConfiguration } from '../helpers';
 import { setConfigValue, setToDefaultConfigValue } from './configFunctions';
 import { logger } from '@autographcraft/core';
 

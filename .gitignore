@@ -132,6 +132,7 @@ dist
 # AutoGraphCraft Generated Folders
 generated/models/*/*
 !generated/models/*/hookIns
+generated/models/*/hookIns/README.md
 generated/generatedDatabase
 generated/utils
 generated/generatedTypes
