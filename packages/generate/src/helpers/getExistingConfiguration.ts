@@ -21,14 +21,12 @@ export async function getExistingConfiguration(
     currentWorkingDirectory,
     CONFIG_FILE_NAME
   );
-  const existingConfigurationPathUrl = pathToFileURL(
-    existingConfigurationPath
-  ).href;
+  const existingConfigurationPathUrl = pathToFileURL(existingConfigurationPath);
 
   if (!existsSync(existingConfigurationPathUrl)) {
     return undefined;
   }
-  const existingConfigContent = await import(existingConfigurationPathUrl);
+  const existingConfigContent = await import(existingConfigurationPathUrl.href);
   const existingConfig = existingConfigContent.default;
 
   validateGeneratedTypesDirectory(existingConfig);
