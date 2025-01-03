@@ -38,6 +38,9 @@ export function writeFilesToFileSystem(
     }
 
     writeFileSync(filePath, writableContent);
-    logger.info(`✅ File written: ${filePath}`);
+    const filePathRelativeToCwd = filePath
+      .replace(process.cwd(), '')
+      .replace(/^\//, '');
+    logger.info(`✅ File written: ${filePathRelativeToCwd}`);
   });
 }
