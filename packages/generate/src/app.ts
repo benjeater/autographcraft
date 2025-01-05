@@ -36,7 +36,7 @@ export async function main() {
       }
       await processFunctionToRun(currentWorkingDirectory, params);
       logger.end();
-      return;
+      process.exit(0);
     }
 
     logger.warn(
@@ -44,9 +44,11 @@ export async function main() {
         (processArgVector) => processArgVector.argument
       ).join(', ')}]`
     );
+    logger.end();
     process.exit(1);
   } catch (err) {
     console.error(err);
+    logger.end();
     process.exit(1);
   }
 }

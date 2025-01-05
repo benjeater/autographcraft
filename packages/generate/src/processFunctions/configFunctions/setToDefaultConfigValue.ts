@@ -18,6 +18,7 @@ export async function setToDefaultConfigValue(
     logger.warn(
       `Unknown key '${keyToSet}' provided; please check your command and try again.`
     );
+    logger.end();
     process.exit(1);
   }
 

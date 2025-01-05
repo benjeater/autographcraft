@@ -10,6 +10,6 @@ export function getTypescriptTypesFilePath(
   return join(
     currentWorkingDirectory,
     generatedTypesDirectory,
-    TYPESCRIPT_TYPES_FILE_NAME
+    `${TYPESCRIPT_TYPES_FILE_NAME}.ts`
   );
 }

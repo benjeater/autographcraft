@@ -13,16 +13,21 @@ const winstonFormat = format.combine(
 
 const winstonFileFormat = format.combine(format.timestamp(), myFormat);
 
+const consoleLogger = new winston.transports.Console({
+  format: winstonFormat,
+});
+
+const fileLogger = new winston.transports.File({
+  filename: LOGGER_FILE_PATH,
+  format: winstonFileFormat,
+});
+
 const logger = winston.createLogger({
-  transports: [
-    new winston.transports.Console({
-      format: winstonFormat,
-    }),
-    new winston.transports.File({
-      filename: LOGGER_FILE_PATH,
-      format: winstonFileFormat,
-    }),
-  ],
+  transports: [consoleLogger, fileLogger],
+});
+
+logger.on('finish', function () {
+  // All log messages has now been logged
 });
 
 export default logger;

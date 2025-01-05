@@ -51,9 +51,9 @@
     "@graphql-tools/merge": "^9.0.8",
     "@inquirer/prompts": "^7.0.1",
     "graphql": "^15.5.0",
+    "lodash.clonedeep": "^4.5.0",
     "mongoose": "^8.8.3",
     "mustache": "^4.2.0",
-    "lodash": "^4.17.21",
     "winston": "^3.17.0"
   },
   "devDependencies": {
@@ -62,7 +62,7 @@
     "@jest/globals": "^29.7.0",
     "@types/eslint": "^9.6.1",
     "@types/jest": "^29.5.14",
-    "@types/lodash": "^4.17.13",
+    "@types/lodash.clonedeep": "^4.5.9",
     "@types/mustache": "^4.2.5",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",

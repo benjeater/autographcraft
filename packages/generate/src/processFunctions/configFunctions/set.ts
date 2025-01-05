@@ -20,6 +20,7 @@ export async function setConfigValue(
     logger.warn(
       `Unknown key '${keyToSet}' provided; please check your command and try again.`
     );
+    logger.end();
     process.exit(1);
   }
 
@@ -38,6 +39,7 @@ export async function setConfigValue(
     valueToSet
   );
   if (!checkResult) {
+    logger.end();
     process.exit(1);
   }
 

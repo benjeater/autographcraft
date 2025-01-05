@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.cloneDeep';
 import { AutoGraphCraftAuthorisationParams } from '../../types';
 import mongoose from 'mongoose';
 import { DATABASE_CODES, MONGO_DB_CONNECTION_LIBRARY } from '../../../types';
