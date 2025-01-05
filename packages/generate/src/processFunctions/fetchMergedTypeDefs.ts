@@ -45,9 +45,11 @@ export async function fetchMergedTypeDefs(
   });
 
   if (typesArray.length === 0) {
-    throw new Error(
+    logger.warn(
       `No schema files found in the directory ${schemaSourceDirectory}`
     );
+    logger.end();
+    process.exit(0);
   }
 
   // For all default scalars, add the filter input types

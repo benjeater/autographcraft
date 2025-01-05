@@ -8,10 +8,9 @@
     "packages/generate"
   ],
   "scripts": {
-    "copyBaseReadMe": "for dir in packages/*; do cp README.md \"$dir/\"; done",
-    "copyOtherReadMes": "for dir in packages/*; do cp README-*.md \"$dir/\"; done",
+    "copyReadMe": "for dir in packages/*; do cp README.md \"$dir/\"; done",
     "copyExamples": "for dir in packages/*; do cp -r examples \"$dir/\"; done",
-    "copyFiles": "npm run copyBaseReadMe && npm run copyOtherReadMes && npm run copyExamples",
+    "copyFiles": "npm run copyReadMe",
     "publishAll": "npm run clean -ws && npm run copyFiles && npm publish -w=packages/core && npm publish -w=packages/generate && npm publish -w=packages/mongodb",
     "generate": "npm run compile -ws && npm install && npx autographcraft generate"
   },

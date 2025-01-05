@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 import type { FilterConverterMongoDBParams } from '../FilterConverterMongoDB';
 
 const defaultContext = {

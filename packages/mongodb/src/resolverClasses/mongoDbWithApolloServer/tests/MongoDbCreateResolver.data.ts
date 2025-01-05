@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.cloneDeep';
 import { type MongoDbCreateResolverParams } from '../MongoDbCreateResolver';
 
 const USER_MODEL_FIELDS = [

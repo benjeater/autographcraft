@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.cloneDeep';
 
 const FIELDS_ALWAYS_PERMITTED = ['_id', 'id'];
 

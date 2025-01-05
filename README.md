@@ -79,6 +79,9 @@ npx autographcraft init --default
 
 ### Running the Package
 
+> **NOTE:**  
+> If you are following these steps in order, you will not currently have a defined schema.  The generation process will warn you that there is no schema and will not generate any files.  This is expected behaviour.  To add a schema, see the [Specifying the Schema](#specifying-the-schema) section.
+
 The package can be run using the `generate` command:
 
 ```sh
@@ -120,11 +123,13 @@ The configuration should be updated via the `config set` command. Further detail
 
 ### Specifying the Schema
 
-In order to generate the types, you will need to specify the schema. This is done by creating `.graphql` files in the `schemaSourceDirectory` directory specified in the `autographcraft.config.js` file.
+In order to generate the types, you will need to specify the schema. This is done by creating `.graphql` files in the `schemaSourceDirectory` directory specified in the `autographcraft.config.js` file.  For instance, the `User` schema might be defined in a file called `User.graphql` in the `src/schemas` directory:
 
 A standard schema file for a user might look like:
 
 ```graphql
+# src/schemas/User.graphql
+
 type User @model {
   id: ID!
   name: String!
@@ -172,17 +177,16 @@ import { loadFiles } from "@graphql-tools/load-files";
 const typeDefs = await loadFiles("src/generatedTypes/typeDefs.graphql");
 ```
 
-These can then be combined to create the schema for the GraphQL server:
+These can then be combined to create the the GraphQL server:
 
 ```typescript
 import { ApolloServer } from 'apollo-server';
-import { makeExecutableSchema } from '@graphql-tools/schema';
 import { loadFiles } from '@graphql-tools/load-files';
 import resolvers from './generatedTypes/resolvers';
 
 const typeDefs = await loadFiles('src/generatedTypes/typeDefs.graphql');
 
-const schema = makeExecutableSchema({
+const server = new ApolloServer({
   typeDefs,
   resolvers,
 });
@@ -191,7 +195,17 @@ const schema = makeExecutableSchema({
 The context can be generated using the `createAutoGraphCraftContext` function from the `generatedUtilsDirectory` in the `autographcraft.config.js` file:
 
 ```typescript
-import { createAutoGraphCraftContext } from './generatedTypes/utils';
+import { config } from "../autographcraft.config.js";
+import {
+  type AutoGraphCraftContextParams,
+  createAutoGraphCraftContext,
+} from "./generatedUtils";
+
+const autoGraphCraftContextParams: AutoGraphCraftContextParams = {
+  mongooseConnection: yourMongooseConnection,
+  config,
+  authInitialisationData: {},
+};
 
 const context = async (initialContext) => {
   // Create the context required for the resolvers
@@ -200,15 +214,26 @@ const context = async (initialContext) => {
   );
   
   // Combine the initial context with the autographcraft context
-  const context = {
+  const combinedContext = {
     ...initialContext,
     ...autographcraftContext,
   };
-  return context;
+  return combinedContext;
 };
 ```
 
-An example of how to implement the resolvers with GraphQL Yoga can be found in the [Examples](./examples) directory.
+Then you can start the Apollo Server:
+
+```typescript
+const { url } = await startStandaloneServer(server, {
+  listen: { port: 3000 },
+  context,
+});
+
+console.log(`🚀  Server ready at: ${url}`);
+```
+
+Full examples of how to implement the generated files can be found in the [Examples](./examples) directory.
 
 ### Custom Resolvers
 

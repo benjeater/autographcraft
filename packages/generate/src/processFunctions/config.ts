@@ -22,6 +22,7 @@ export async function config(
     logger.warn(
       'No existing configuration exists, use `init` to create the initial configuration file'
     );
+    logger.end();
     process.exit(1);
   }
 

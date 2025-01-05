@@ -49,12 +49,14 @@ function validateGeneratedTypesDirectory(
 ) {
   if (!existingConfig.generatedTypesDirectory) {
     logger.warn('⚠️ The generated types directory is not set; please fix this');
+    logger.end();
     process.exit(1);
   }
   if (typeof existingConfig.generatedTypesDirectory !== 'string') {
     logger.warn(
       '⚠️ The generated types directory is not a string; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
 }
@@ -66,12 +68,14 @@ function validateGeneratedDatabaseDirectory(
     logger.warn(
       '⚠️ The generated database directory is not set; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
   if (typeof existingConfig.generatedDatabaseDirectory !== 'string') {
     logger.warn(
       '⚠️ The generated database directory is not a string; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
 }
@@ -81,12 +85,14 @@ function validateGeneratedUtilsDirectory(
 ) {
   if (!existingConfig.generatedUtilsDirectory) {
     logger.warn('⚠️ The generated utils directory is not set; please fix this');
+    logger.end();
     process.exit(1);
   }
   if (typeof existingConfig.generatedUtilsDirectory !== 'string') {
     logger.warn(
       '⚠️ The generated utils directory is not a string; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
 }
@@ -98,12 +104,14 @@ function validateGeneratedModelsDirectory(
     logger.warn(
       '⚠️ The generated models directory is not set; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
   if (typeof existingConfig.generatedModelsDirectory !== 'string') {
     logger.warn(
       '⚠️ The generated models directory is not a string; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
 }
@@ -111,10 +119,12 @@ function validateGeneratedModelsDirectory(
 function validateQueriesDirectory(existingConfig: AutoGraphCraftConfiguration) {
   if (!existingConfig.queriesDirectory) {
     logger.warn('⚠️ The queries directory is not set; please fix this');
+    logger.end();
     process.exit(1);
   }
   if (typeof existingConfig.queriesDirectory !== 'string') {
     logger.warn('⚠️ The queries directory is not a string; please fix this');
+    logger.end();
     process.exit(1);
   }
 }
@@ -124,10 +134,12 @@ function validateMutationsDirectory(
 ) {
   if (!existingConfig.mutationsDirectory) {
     logger.warn('⚠️ The mutations directory is not set; please fix this');
+    logger.end();
     process.exit(1);
   }
   if (typeof existingConfig.mutationsDirectory !== 'string') {
     logger.warn('⚠️ The mutations directory is not a string; please fix this');
+    logger.end();
     process.exit(1);
   }
 }
@@ -137,12 +149,14 @@ function validateSchemaSourceDirectory(
 ) {
   if (!existingConfig.schemaSourceDirectory) {
     logger.warn('⚠️ The schema source directory is not set; please fix this');
+    logger.end();
     process.exit(1);
   }
   if (typeof existingConfig.schemaSourceDirectory !== 'string') {
     logger.warn(
       '⚠️ The schema source directory is not a string; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
 }
@@ -153,10 +167,12 @@ function validateGitIgnorePath(
 ) {
   if (!existingConfig.gitIgnorePath) {
     logger.warn('⚠️ The git ignore path is not set; please fix this');
+    logger.end();
     process.exit(1);
   }
   if (typeof existingConfig.gitIgnorePath !== 'string') {
     logger.warn('⚠️ The git ignore path is not a string; please fix this');
+    logger.end();
     process.exit(1);
   }
   if (
@@ -165,6 +181,7 @@ function validateGitIgnorePath(
     logger.warn(
       '⚠️ No file exists at the git ignore path; either create the file or update the path'
     );
+    logger.end();
     process.exit(1);
   }
 }
@@ -172,16 +189,19 @@ function validateGitIgnorePath(
 function validateDatabaseType(existingConfig: AutoGraphCraftConfiguration) {
   if (!existingConfig.databaseType) {
     logger.warn('⚠️ The database type is not set; please fix this');
+    logger.end();
     process.exit(1);
   }
   if (typeof existingConfig.databaseType !== 'string') {
     logger.warn('⚠️ The database type is not a string; please fix this');
+    logger.end();
     process.exit(1);
   }
   if (!Object.values(DATABASE_CODES).includes(existingConfig.databaseType)) {
     logger.warn(
       '⚠️ The database type is not a valid database type; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
 }
@@ -196,6 +216,7 @@ function validateMongoDbConnectionLibrary(
     logger.warn(
       '⚠️ The MongoDB connection library is not a string; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
   if (
@@ -206,6 +227,7 @@ function validateMongoDbConnectionLibrary(
     logger.warn(
       '⚠️ The database type is not a valid database type; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
 }
@@ -221,6 +243,7 @@ function validateAuthorisationStructure(
     logger.warn(
       '⚠️ The authorisation structure is not an array; please fix this'
     );
+    logger.end();
     process.exit(1);
   }
 }
