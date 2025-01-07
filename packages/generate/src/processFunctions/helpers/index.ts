@@ -5,3 +5,4 @@ export { getFileGenerationQuery } from './getFileGenerationQuery';
 export { printStatistics, type PrintStatisticsParams } from './printStatistics';
 export { checkIfSameAsPreviousRequest } from './checkIfSameAsPreviousRequest';
 export { savePreviousRequest } from './savePreviousRequest';
+export { validateSchema, ValidationResult } from './validateSchema';

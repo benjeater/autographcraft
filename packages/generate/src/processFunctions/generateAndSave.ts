@@ -8,6 +8,8 @@ import {
   checkIfSameAsPreviousRequest,
   printStatistics,
   savePreviousRequest,
+  validateSchema,
+  ValidationResult,
   type PrintStatisticsParams,
 } from './helpers';
 import {
@@ -45,6 +47,13 @@ export async function generateAndSave(
     existingConfig,
     [] // custom scalars
   );
+
+  // Validate the schema
+  const validateResult = await validateSchema(schema);
+  if (validateResult === ValidationResult.INVALID) {
+    logger.end();
+    process.exit(1);
+  }
 
   // Check if this request is the same as the previous request
   const isSameAsPreviousRequest = checkIfSameAsPreviousRequest(

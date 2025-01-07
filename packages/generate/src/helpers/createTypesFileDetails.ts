@@ -4,10 +4,10 @@ import type { Types } from '@graphql-codegen/plugin-helpers';
 import type {
   AutoGraphCraftConfiguration,
   OutputFileDetail,
-  ScalarDetail,
 } from '@autographcraft/core';
-import { PACKAGE_SCALARS, TYPE_DEFS_FILE_NAME } from '@autographcraft/core';
+import { TYPE_DEFS_FILE_NAME } from '@autographcraft/core';
 import { getTypescriptTypesFilePath } from './getTypescriptTypesFilePath';
+import { getPackageAndCustomScalars } from './getPackageAndCustomScalars';
 
 type CodeGenOutputFileDetail = {
   filename: string;
@@ -31,7 +31,8 @@ export async function createTypesFileDetails(
   const generateCodeGenConfig: Types.Config = {
     overwrite: true,
     schema: printableSchemaFileContent,
-    silent: true,
+    // silent: true,
+    errorsOnly: true,
     generates: {
       [getTypescriptTypesFilePath(currentWorkingDirectory, configuration)]: {
         plugins: ['typescript'],
@@ -91,20 +92,4 @@ function getPrintableSchemaFileContent(
   }
 
   return printableSchemaFile.content;
-}
-
-function getPackageAndCustomScalars(): Record<string, string> {
-  const scalarsToMap: ScalarDetail[] = [
-    ...PACKAGE_SCALARS,
-    // ...customScalars, // TODO: custom scalars
-  ];
-
-  const scalars: Record<string, string> = scalarsToMap.reduce(
-    (acc, scalar) => {
-      acc[scalar.scalarName] = scalar.javascriptType;
-      return acc;
-    },
-    {} as Record<string, string>
-  );
-  return scalars;
 }

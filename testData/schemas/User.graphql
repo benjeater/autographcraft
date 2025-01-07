@@ -17,9 +17,19 @@ type User
   testField: TestField
   subscriptions: [UserSubscription] @hasMany(targetIndexName: "byUserId")
   floatField: Float
+  enumField: TestEnum
 }
 
 type TestField {
   fieldOne: String
   fieldTwo: Int
+}
+
+enum TestEnum {
+  ONE
+  TWO
+  THREE
+  HYPHENATED_VALUE
+  lower_case_value
+  camelCaseValue
 }

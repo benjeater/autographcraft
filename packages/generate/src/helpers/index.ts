@@ -5,3 +5,4 @@ export { getTypesDirectory } from './getTypesDirectory';
 export { createTypesFileDetails } from './createTypesFileDetails';
 export { startRedirectServer } from './startRedirectServer';
 export { getFilesFromResponse } from './getFilesFromResponse';
+export { getPackageAndCustomScalars } from './getPackageAndCustomScalars';
