@@ -96,6 +96,18 @@ The generation process will only request the generation of the files if the sche
 npx autographcraft generate --force
 ```
 
+If you wish to turn off the logging output when running the `generate` command, add the `--quiet` or `-q` flag to the end of the command.
+
+```sh
+npx autographcraft generate --quiet
+
+# or
+
+npx autographcraft generate -q
+```
+
+If you need help at any time, run the command `npx autographcraft help` to open the full documentation.
+
 ### Implement the Package
 
 Add the following script to your `package.json` file:

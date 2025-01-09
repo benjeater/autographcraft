@@ -99,6 +99,13 @@ export async function generateAndSave(
   // Write the last request to the file system
   savePreviousRequest(existingConfig, schema);
 
+  // Print out any warnings from the API response
+  if (apiResponse.warnings.length > 0) {
+    apiResponse.warnings.forEach((warning) => {
+      logger.warn(`⚠️ Warning: ${warning}`);
+    });
+  }
+
   // Give user some statistics
   const printStatisticsParams: PrintStatisticsParams = {
     outputFiles: allFiles,
