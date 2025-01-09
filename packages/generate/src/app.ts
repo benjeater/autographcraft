@@ -34,6 +34,12 @@ export async function main() {
         default:
           processFunctionToRun = help;
       }
+
+      // If the params include the quiet flag, set the logger to quiet
+      if (params.includes('--quiet') || params.includes('-q')) {
+        logger.silent = true;
+      }
+
       await processFunctionToRun(currentWorkingDirectory, params);
       logger.end();
       process.exit(0);
@@ -47,7 +53,8 @@ export async function main() {
     logger.end();
     process.exit(1);
   } catch (err) {
-    console.error(err);
+    logger.silent = false;
+    logger.error(err);
     logger.end();
     process.exit(1);
   }
