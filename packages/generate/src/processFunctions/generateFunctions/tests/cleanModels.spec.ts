@@ -23,6 +23,8 @@ describe('cleanModels', () => {
   it('should delete model directories that are not found in the latest schema', () => {
     const config = {
       generatedModelsDirectory: 'generatedModelsDirectory',
+      generatedTypesDirectory: 'generatedTypesDirectory',
+      generatedDatabaseDirectory: 'generatedDatabaseDirectory',
     } as any;
     const allFiles = [
       {
@@ -52,9 +54,34 @@ describe('cleanModels', () => {
       { withFileTypes: true }
     );
 
-    expect(rmSync).toHaveBeenCalledTimes(1);
-    expect(rmSync).toHaveBeenCalledWith(
+    expect(rmSync).toHaveBeenCalledTimes(4);
+    expect(rmSync).toHaveBeenNthCalledWith(
+      1,
       '/current/working/directory/generatedModelsDirectory/modelCompany',
+      {
+        force: true,
+        recursive: true,
+      }
+    );
+    expect(rmSync).toHaveBeenNthCalledWith(
+      2,
+      '/current/working/directory/generatedDatabaseDirectory/databaseConnections/CompanyDatabaseConnection.ts',
+      {
+        force: true,
+        recursive: true,
+      }
+    );
+    expect(rmSync).toHaveBeenNthCalledWith(
+      3,
+      '/current/working/directory/generatedDatabaseDirectory/databaseDocumentTypes/CompanyDatabaseDocumentType.ts',
+      {
+        force: true,
+        recursive: true,
+      }
+    );
+    expect(rmSync).toHaveBeenNthCalledWith(
+      4,
+      '/current/working/directory/generatedDatabaseDirectory/databaseSchemas/CompanyDatabaseSchema.ts',
       {
         force: true,
         recursive: true,

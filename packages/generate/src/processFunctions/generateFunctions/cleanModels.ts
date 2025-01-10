@@ -15,13 +15,32 @@ export function cleanModels(
     'ℹ️ Deleting existing model directories where the model was not found in the latest schema...'
   );
 
-  // Read all the model directories in the generatedModelsDirectory from the configuration
   const generatedModelsDirectory = join(
     currentWorkingDirectory,
     config.generatedModelsDirectory
   );
 
-  // Get all the model directories
+  const generatedDatabaseDirectory = join(
+    currentWorkingDirectory,
+    config.generatedDatabaseDirectory
+  );
+
+  const generatedDatabaseConnectionsDirectory = join(
+    generatedDatabaseDirectory,
+    'databaseConnections'
+  );
+
+  const generatedDocumentTypesDirectory = join(
+    generatedDatabaseDirectory,
+    'databaseDocumentTypes'
+  );
+
+  const generatedSchemaDirectory = join(
+    generatedDatabaseDirectory,
+    'databaseSchemas'
+  );
+
+  // Read all the model directories in the generatedModelsDirectory
   const modelDirectories = readdirSync(generatedModelsDirectory, {
     withFileTypes: true,
   })
@@ -38,9 +57,45 @@ export function cleanModels(
   // If not, delete the directory
   modelDirectories.forEach((modelDirectory) => {
     if (!modelNames.includes(modelDirectory)) {
+      const modelNameOnly = modelDirectory.replace('model', '');
+
       logger.info(`Deleting model directory: ${modelDirectory}`);
+
       // Remove the model directory
       rmSync(join(generatedModelsDirectory, modelDirectory), {
+        recursive: true,
+        force: true,
+      });
+
+      // Tidy up the database connections directory
+      const databaseConnectionFileName = `${modelNameOnly}DatabaseConnection.ts`;
+      const databaseConnectionFile = join(
+        generatedDatabaseConnectionsDirectory,
+        databaseConnectionFileName
+      );
+      rmSync(databaseConnectionFile, {
+        recursive: true,
+        force: true,
+      });
+
+      // Tidy up the generated database document types directory
+      const databaseDocumentTypeFileName = `${modelNameOnly}DatabaseDocumentType.ts`;
+      const databaseDocumentTypeFile = join(
+        generatedDocumentTypesDirectory,
+        databaseDocumentTypeFileName
+      );
+      rmSync(databaseDocumentTypeFile, {
+        recursive: true,
+        force: true,
+      });
+
+      // Tidy up the generated schema directory
+      const databaseSchemaFileName = `${modelNameOnly}DatabaseSchema.ts`;
+      const databaseSchemaFile = join(
+        generatedSchemaDirectory,
+        databaseSchemaFileName
+      );
+      rmSync(databaseSchemaFile, {
         recursive: true,
         force: true,
       });

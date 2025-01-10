@@ -110,12 +110,6 @@ export async function generateAndSave(
     });
   }
 
-  // TODO: Tidy up the generated database folder
-
-  // TODO: Tidy up the generated schema folder
-
-  // TODO: Tidy up the generated database document types folder
-
   // If the param to delete existing models is present, delete the existing models
   const shouldCleanModels =
     params.includes(PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS) ||
