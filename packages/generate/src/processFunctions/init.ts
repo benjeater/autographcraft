@@ -18,6 +18,7 @@ import {
 import { getExistingConfiguration } from '../helpers';
 import { writeConfigFileAndUpdateGitIgnore } from './sharedFunctions';
 import { additionalQuestionsDatabase } from './initFunctions/additionalQuestionsDatabase';
+import { PROCESS_ARGUMENT_PARAMS } from '../constants';
 
 /**
  * Initialises the application by adding asking the user questions,
@@ -53,8 +54,11 @@ export async function init(
   // Get a copy of the default config file
   const newConfig = { ...DEFAULT_CONFIG };
 
-  // Check if the defaults flag (--default) have been provided
-  if (params.includes('--default')) {
+  // Check if the defaults flag has been provided
+  if (
+    params.includes(PROCESS_ARGUMENT_PARAMS.DEFAULT) ||
+    params.includes(PROCESS_ARGUMENT_PARAMS.DEFAULT_SHORT)
+  ) {
     logger.info('Creating configuration file with default values');
     writeConfigFileAndUpdateGitIgnore(
       currentWorkingDirectory,

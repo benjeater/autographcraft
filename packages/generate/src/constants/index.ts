@@ -33,3 +33,16 @@ export const PROCESS_ARGUMENT_VECTORS: ProcessArgumentVector[] = [
     code: PROCESS_ARGUMENT_VECTOR_CODES.GENERATE,
   },
 ] as const;
+
+export const PROCESS_ARGUMENT_PARAMS = {
+  FORCE: '--force',
+  FORCE_SHORT: '-f',
+  DEFAULT: '--default',
+  DEFAULT_SHORT: '-d',
+  DRY_RUN: '--dry-run',
+  DRY_RUN_SHORT: '-dr',
+  CLEAN_MODELS: '--clean-models',
+  CLEAN_MODELS_SHORT: '-cm',
+  QUIET: '--quiet',
+  QUIET_SHORT: '-q',
+} as const;

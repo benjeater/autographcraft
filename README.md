@@ -71,10 +71,14 @@ The initialisation is a guided process to create the configuration which can be 
 npx autographcraft init
 ```
 
-If you wish to initialise with the default settings, use:
+If you wish to initialise with the default settings, use the `--default` flag:
 
 ```sh
 npx autographcraft init --default
+
+# OR
+
+npx autographcraft init -d
 ```
 
 ### Running the Package
@@ -94,14 +98,18 @@ The generation process will only request the generation of the files if the sche
 
 ```sh
 npx autographcraft generate --force
+
+# OR
+
+npx autographcraft generate -f
 ```
 
-If you wish to turn off the logging output when running the `generate` command, add the `--quiet` or `-q` flag to the end of the command.
+If you wish to turn off the logging output when running the `generate` command, add the `--quiet` flag to the end of the command.
 
 ```sh
 npx autographcraft generate --quiet
 
-# or
+# OR
 
 npx autographcraft generate -q
 ```

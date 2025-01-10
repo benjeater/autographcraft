@@ -5,7 +5,7 @@ import { init } from './processFunctions/init';
 import { config } from './processFunctions/config';
 import { help } from './processFunctions/help';
 import { generateAndSave } from './processFunctions/generateAndSave';
-import { PROCESS_ARGUMENT_VECTORS } from './constants';
+import { PROCESS_ARGUMENT_PARAMS, PROCESS_ARGUMENT_VECTORS } from './constants';
 import type { ProcessFunction } from './types';
 
 // FUTURE: Allow the user to force a new login via a flag (for account changing)
@@ -36,7 +36,10 @@ export async function main() {
       }
 
       // If the params include the quiet flag, set the logger to quiet
-      if (params.includes('--quiet') || params.includes('-q')) {
+      if (
+        params.includes(PROCESS_ARGUMENT_PARAMS.QUIET) ||
+        params.includes(PROCESS_ARGUMENT_PARAMS.QUIET_SHORT)
+      ) {
         logger.silent = true;
       }
 
