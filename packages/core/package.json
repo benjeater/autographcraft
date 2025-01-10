@@ -1,6 +1,6 @@
 {
   "name": "@autographcraft/core",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "The core application for AutoGraphCraft",
   "main": "./dist/commonjs/app.js",
   "module": "./dist/esm/app.js",
