@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import {
   STORED_DETAILS_DIR_NAME,
   LAST_REQUEST_FILE_NAME,
+  PROCESS_ARGUMENT_PARAMS,
 } from '../../constants';
 import type {
   AutoGraphCraftConfiguration,
@@ -25,7 +26,11 @@ export function checkIfSameAsPreviousRequest(
   currentConfiguration: AutoGraphCraftConfiguration,
   schema: MergedTypeDef
 ): boolean {
-  if (params.includes('--force')) {
+  if (params.includes(PROCESS_ARGUMENT_PARAMS.FORCE)) {
+    return false;
+  }
+
+  if (params.includes(PROCESS_ARGUMENT_PARAMS.FORCE_SHORT)) {
     return false;
   }
 

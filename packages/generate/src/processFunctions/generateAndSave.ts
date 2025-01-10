@@ -13,18 +13,22 @@ import {
   type PrintStatisticsParams,
 } from './helpers';
 import {
-  fetchMergedTypeDefs,
   getAuthIdToken,
-  getAutoGraphCraftApiResponse,
+  cleanModels,
   writeFilesToFileSystem,
-} from '../processFunctions';
+  getAutoGraphCraftApiResponse,
+  fetchMergedTypeDefs,
+} from './generateFunctions';
+import { PROCESS_ARGUMENT_PARAMS } from '../constants';
 
 export async function generateAndSave(
   currentWorkingDirectory: string,
   params: string[]
 ): Promise<void> {
   // Check if the request is a dry run
-  const isDryRun = params.includes('--dry-run');
+  const isDryRun =
+    params.includes(PROCESS_ARGUMENT_PARAMS.DRY_RUN) ||
+    params.includes(PROCESS_ARGUMENT_PARAMS.DRY_RUN_SHORT);
   if (isDryRun) {
     logger.info('ℹ️ Dry run requested, no files will be written');
   }
@@ -63,7 +67,7 @@ export async function generateAndSave(
   );
   if (isSameAsPreviousRequest) {
     logger.info(
-      'ℹ️ No changes detected, no files will be written. Use `--force` to force a new generation'
+      `ℹ️ No changes detected, no files will be written. Use '${PROCESS_ARGUMENT_PARAMS.FORCE}' or '${PROCESS_ARGUMENT_PARAMS.FORCE_SHORT}' to force a new generation`
     );
     return;
   }
@@ -104,6 +108,15 @@ export async function generateAndSave(
     apiResponse.warnings.forEach((warning) => {
       logger.warn(`⚠️ Warning: ${warning}`);
     });
+  }
+
+  // If the param to delete existing models is present, delete the existing models
+  const shouldCleanModels =
+    params.includes(PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS) ||
+    params.includes(PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS_SHORT);
+
+  if (shouldCleanModels) {
+    cleanModels(currentWorkingDirectory, existingConfig, allFiles);
   }
 
   // Give user some statistics

@@ -6,10 +6,10 @@ import {
   getExistingAuthTokens,
   writeAuthTokens,
   startRedirectServer,
-} from '../helpers';
+} from '../../helpers';
 import { logger } from '@autographcraft/core';
-import { SIGN_IN_URL } from '../constants';
-import type { AuthTokens } from '../types';
+import { SIGN_IN_URL } from '../../constants';
+import type { AuthTokens } from '../../types';
 
 /**
  * Fetches the auth token for the user, or prompts the user to visit the

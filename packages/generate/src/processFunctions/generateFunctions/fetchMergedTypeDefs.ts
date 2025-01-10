@@ -13,7 +13,7 @@ import { DEFAULT_SCALARS, PACKAGE_SCALARS } from '@autographcraft/core';
 import {
   convertSchemaToDocumentTypeDef,
   convertScalarDetailToScalarFilterInput,
-} from './helpers';
+} from '../helpers';
 
 const PERMITTED_EXTENSIONS: string[] = ['graphql', 'gql'];
 

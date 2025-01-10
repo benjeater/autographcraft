@@ -1,7 +1,7 @@
 import { dirname } from 'path';
 import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import type { OutputFileDetail } from '@autographcraft/core';
-import { addIgnoreHeaderToContent } from './helpers';
+import { addIgnoreHeaderToContent } from '../helpers';
 import { logger } from '@autographcraft/core';
 
 export function writeFilesToFileSystem(

@@ -71,10 +71,14 @@ The initialisation is a guided process to create the configuration which can be 
 npx autographcraft init
 ```
 
-If you wish to initialise with the default settings, use:
+If you wish to initialise with the default settings, use the `--default` flag:
 
 ```sh
 npx autographcraft init --default
+
+# OR
+
+npx autographcraft init -d
 ```
 
 ### Running the Package
@@ -94,17 +98,34 @@ The generation process will only request the generation of the files if the sche
 
 ```sh
 npx autographcraft generate --force
+
+# OR
+
+npx autographcraft generate -f
 ```
 
-If you wish to turn off the logging output when running the `generate` command, add the `--quiet` or `-q` flag to the end of the command.
+If you wish to turn off the logging output when running the `generate` command, add the `--quiet` flag to the end of the command.
 
 ```sh
 npx autographcraft generate --quiet
 
-# or
+# OR
 
 npx autographcraft generate -q
 ```
+
+If you remove a model from the schema, you may also wish to remove the generated files from your project.  This can be done by running the `--clean-models` flag:
+
+```sh
+npx autographcraft generate --clean-models
+
+# OR
+
+npx autographcraft generate -cm
+```
+
+> **NOTE:**  
+> The `--clean-models` flag will remove the entire model directory, including any committed files in the `hookIns` directory.
 
 If you need help at any time, run the command `npx autographcraft help` to open the full documentation.
 

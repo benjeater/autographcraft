@@ -1,8 +1,8 @@
-import { AUTOGRAPHCRAFT_API_URL } from '../constants';
-import type { AutoGraphCraftApiResponse } from '../types';
+import { AUTOGRAPHCRAFT_API_URL } from '../../constants';
+import type { AutoGraphCraftApiResponse } from '../../types';
 import { logger } from '@autographcraft/core';
 import type { AutoGraphCraftConfiguration } from '@autographcraft/core';
-import { getFileGenerationQuery } from './helpers';
+import { getFileGenerationQuery } from '../helpers';
 
 type APIError = {
   message: string;
