@@ -13,11 +13,12 @@ import {
   type PrintStatisticsParams,
 } from './helpers';
 import {
-  fetchMergedTypeDefs,
   getAuthIdToken,
-  getAutoGraphCraftApiResponse,
+  cleanModels,
   writeFilesToFileSystem,
-} from '../processFunctions';
+  getAutoGraphCraftApiResponse,
+  fetchMergedTypeDefs,
+} from './generateFunctions';
 import { PROCESS_ARGUMENT_PARAMS } from '../constants';
 
 export async function generateAndSave(
@@ -115,7 +116,14 @@ export async function generateAndSave(
 
   // TODO: Tidy up the generated database document types folder
 
-  // TODO: If the param to delete existing models is present, delete the existing models
+  // If the param to delete existing models is present, delete the existing models
+  const shouldCleanModels =
+    params.includes(PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS) ||
+    params.includes(PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS_SHORT);
+
+  if (shouldCleanModels) {
+    cleanModels(currentWorkingDirectory, existingConfig, allFiles);
+  }
 
   // Give user some statistics
   const printStatisticsParams: PrintStatisticsParams = {

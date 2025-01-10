@@ -114,6 +114,19 @@ npx autographcraft generate --quiet
 npx autographcraft generate -q
 ```
 
+If you remove a model from the schema, you may also wish to remove the generated files from your project.  This can be done by running the `--clean-models` flag:
+
+```sh
+npx autographcraft generate --clean-models
+
+# OR
+
+npx autographcraft generate -cm
+```
+
+> **NOTE:**  
+> The `--clean-models` flag will remove the entire model directory, including any committed files in the `hookIns` directory.
+
 If you need help at any time, run the command `npx autographcraft help` to open the full documentation.
 
 ### Implement the Package
