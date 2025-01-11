@@ -40,9 +40,9 @@ export const PROCESS_ARGUMENT_PARAMS = {
   DEFAULT: '--default',
   DEFAULT_SHORT: '-d',
   DRY_RUN: '--dry-run',
-  DRY_RUN_SHORT: '-dr',
+  DRY_RUN_SHORT: '-r',
   CLEAN_MODELS: '--clean-models',
-  CLEAN_MODELS_SHORT: '-cm',
+  CLEAN_MODELS_SHORT: '-m',
   QUIET: '--quiet',
   QUIET_SHORT: '-q',
 } as const;

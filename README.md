@@ -121,7 +121,7 @@ npx autographcraft generate --clean-models
 
 # OR
 
-npx autographcraft generate -cm
+npx autographcraft generate -m
 ```
 
 > **NOTE:**  
