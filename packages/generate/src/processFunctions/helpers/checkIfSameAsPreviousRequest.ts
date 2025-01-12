@@ -11,6 +11,7 @@ import type {
   MergedTypeDef,
 } from '@autographcraft/core';
 import { LastRequestStrings } from '../../types';
+import type { ProcessFunctionParams } from '../../types';
 
 /**
  * Checks if the current request is the same as the previous request, including
@@ -22,15 +23,15 @@ import { LastRequestStrings } from '../../types';
  * @returns `true` if the request is the same as the previous request, `false` otherwise
  */
 export function checkIfSameAsPreviousRequest(
-  params: string[],
+  params: ProcessFunctionParams,
   currentConfiguration: AutoGraphCraftConfiguration,
   schema: MergedTypeDef
 ): boolean {
-  if (params.includes(PROCESS_ARGUMENT_PARAMS.FORCE)) {
+  if (params[PROCESS_ARGUMENT_PARAMS.FORCE]) {
     return false;
   }
 
-  if (params.includes(PROCESS_ARGUMENT_PARAMS.FORCE_SHORT)) {
+  if (params[PROCESS_ARGUMENT_PARAMS.FORCE_SHORT]) {
     return false;
   }
 

@@ -5,14 +5,15 @@ import type {
   AutoGraphCraftConfiguration,
   AutoGraphCraftConfigurationField,
 } from '@autographcraft/core';
+import type { ProcessFunctionParams } from '../../types';
 
 export async function setToDefaultConfigValue(
   currentWorkingDirectory: string,
-  params: string[],
+  params: ProcessFunctionParams,
   paramIndexConfig: number,
   existingConfig: AutoGraphCraftConfiguration
 ): Promise<void> {
-  const keyToSet = params[paramIndexConfig + 2];
+  const keyToSet = params._[paramIndexConfig + 2];
 
   if (!Object.keys(DEFAULT_CONFIG).includes(keyToSet)) {
     logger.warn(

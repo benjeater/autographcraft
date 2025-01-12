@@ -1,6 +1,7 @@
 import { getExistingConfiguration } from '../helpers';
 import { setConfigValue, setToDefaultConfigValue } from './configFunctions';
 import { logger } from '@autographcraft/core';
+import type { ProcessFunctionParams } from '../types';
 
 const CONFIG_FUNCTION: string[] = ['set', 'setToDefault'] as const;
 
@@ -12,7 +13,7 @@ const CONFIG_FUNCTION: string[] = ['set', 'setToDefault'] as const;
  */
 export async function config(
   currentWorkingDirectory: string,
-  params: string[]
+  params: ProcessFunctionParams
 ): Promise<void> {
   // Get the existing configuration
   const existingConfig = await getExistingConfiguration(
@@ -27,8 +28,8 @@ export async function config(
   }
 
   // Get the index of the config param provided to the function call
-  const paramIndexConfig = params.indexOf('config');
-  const paramConfigFunction = params[paramIndexConfig + 1];
+  const paramIndexConfig = params._.indexOf('config');
+  const paramConfigFunction = params._[paramIndexConfig + 1];
   if (!CONFIG_FUNCTION.includes(paramConfigFunction)) {
     logger.warn(
       `Unknown function following 'config', expected one of: ${CONFIG_FUNCTION.join(
