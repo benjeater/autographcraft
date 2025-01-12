@@ -73,7 +73,7 @@ export async function generateAndSave(
   }
 
   // Get the auth token to call the API with
-  const authIdToken = await getAuthIdToken();
+  const authIdToken = await getAuthIdToken(params);
 
   // Start the timer
   const startTime = process.hrtime.bigint();

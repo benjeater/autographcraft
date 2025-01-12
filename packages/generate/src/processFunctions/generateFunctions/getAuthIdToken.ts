@@ -8,14 +8,29 @@ import {
   startRedirectServer,
 } from '../../helpers';
 import { logger } from '@autographcraft/core';
-import { SIGN_IN_URL } from '../../constants';
-import type { AuthTokens } from '../../types';
+import { PROCESS_ARGUMENT_PARAMS, SIGN_IN_URL } from '../../constants';
+import type { AuthTokens, ProcessFunctionParams } from '../../types';
+import { getIdTokenUsingUsernameAndPassword } from './getIdTokenUsingUsernameAndPassword';
 
 /**
  * Fetches the auth token for the user, or prompts the user to visit the
  * sign in / sign up page.
  */
-export async function getAuthIdToken(): Promise<string> {
+export async function getAuthIdToken(
+  params: ProcessFunctionParams
+): Promise<string> {
+  // If the username and password are provided, use them to get the token
+  if (
+    params[PROCESS_ARGUMENT_PARAMS.USERNAME] &&
+    params[PROCESS_ARGUMENT_PARAMS.PASSWORD]
+  ) {
+    return getIdTokenUsingUsernameAndPassword(
+      params[PROCESS_ARGUMENT_PARAMS.USERNAME] as string,
+      params[PROCESS_ARGUMENT_PARAMS.PASSWORD] as string
+    );
+  }
+
+  // Otherwise, open the sign in page if the token is expired or missing
   return new Promise<string>((resolve, reject) => {
     try {
       const existingTokens = getExistingAuthTokens();
