@@ -7,3 +7,4 @@ export {
   type ProcessFunctionParams,
 } from './FunctionCalls';
 export type { LastRequestStrings } from './PreviousRequest';
+export type { AuthResponse } from './Auth';

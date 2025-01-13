@@ -17,6 +17,7 @@ import {
   cleanModels,
   writeFilesToFileSystem,
   getAutoGraphCraftApiResponse,
+  getIdTokenUsingUsernameAndPassword,
   fetchMergedTypeDefs,
 } from './generateFunctions';
 import { PROCESS_ARGUMENT_PARAMS } from '../constants';
@@ -73,7 +74,19 @@ export async function generateAndSave(
   }
 
   // Get the auth token to call the API with
-  const authIdToken = await getAuthIdToken(params);
+  // If the username and password are provided, use them to get the token
+  const username = params[PROCESS_ARGUMENT_PARAMS.USERNAME] as
+    | string
+    | undefined;
+  const password = params[PROCESS_ARGUMENT_PARAMS.PASSWORD] as
+    | string
+    | undefined;
+  let authIdToken: string = '';
+  if (username && password) {
+    authIdToken = await getIdTokenUsingUsernameAndPassword(username, password);
+  } else {
+    authIdToken = await getAuthIdToken();
+  }
 
   // Start the timer
   const startTime = process.hrtime.bigint();

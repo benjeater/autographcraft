@@ -10,6 +10,9 @@ export const LAST_REQUEST_FILE_NAME = 'lastRequest' as const;
 export const SIGN_IN_URL = 'https://autographcraft.com/auth/signin' as const;
 export const AUTOGRAPHCRAFT_API_URL =
   'https://apiv1.autographcraft.com/graphql' as const;
+export const AUTOGRAPHCRAFT_AUTH_LOGIN_URL =
+  'https://cognito-idp.eu-west-1.amazonaws.com' as const;
+export const AUTOGRAPHCRAFT_CLIENT_ID = '275p02bql7h0s3brao27dpibah' as const;
 
 export const PROCESS_ARGUMENT_VECTORS: ProcessArgumentVector[] = [
   {
