@@ -6,6 +6,7 @@
 - [Setup](#setup)
   - [Initialise the Package](#initialise-the-package)
   - [Running the Package](#running-the-package)
+  - [Running the Package in CI/CD](#running-the-package-in-cicd)
   - [Implement the Package](#implement-the-package)
   - [Update Configuration](#update-configuration)
 - [Usage](#usage)
@@ -128,6 +129,19 @@ npx autographcraft generate -m
 > The `--clean-models` flag will remove the entire model directory, including any committed files in the `hookIns` directory.
 
 If you need help at any time, run the command `npx autographcraft help` to open the full documentation.
+
+### Running the Package in CI/CD
+
+If you are running the package in a CI/CD pipeline, you will want to run the package without the requirement to sign-in via the AutoGraphCraft website.  This can be done by setting providing the `--username` and `--password` flags to the `generate` command:
+
+```sh
+npx autographcraft generate --username 'your-username' --password 'your-password'
+```
+
+The `generate` command must be run before the build process to ensure the resolvers and types are generated before the build process starts.
+
+> **NOTE:**  
+> The `--username` and `--password` can be wrapped in quotes if they contain special characters.  For instance, passwords containing `!` or `&` should always be wrapped in quotes.
 
 ### Implement the Package
 

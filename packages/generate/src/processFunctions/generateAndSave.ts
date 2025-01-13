@@ -17,20 +17,21 @@ import {
   cleanModels,
   writeFilesToFileSystem,
   getAutoGraphCraftApiResponse,
+  getIdTokenUsingUsernameAndPassword,
   fetchMergedTypeDefs,
 } from './generateFunctions';
 import { PROCESS_ARGUMENT_PARAMS } from '../constants';
+import type { ProcessFunctionParams } from '../types';
 
 export async function generateAndSave(
   currentWorkingDirectory: string,
-  params: string[]
+  params: ProcessFunctionParams
 ): Promise<void> {
   // Check if the request is a dry run
-  const isDryRun =
-    params.includes(PROCESS_ARGUMENT_PARAMS.DRY_RUN) ||
-    params.includes(PROCESS_ARGUMENT_PARAMS.DRY_RUN_SHORT);
+  const isDryRun = (params[PROCESS_ARGUMENT_PARAMS.DRY_RUN] ||
+    params[PROCESS_ARGUMENT_PARAMS.DRY_RUN_SHORT]) as boolean;
   if (isDryRun) {
-    logger.info('ℹ️ Dry run requested, no files will be written');
+    logger.info('ℹ️  Dry run requested, no files will be written');
   }
 
   // Get the existing configuration
@@ -67,13 +68,25 @@ export async function generateAndSave(
   );
   if (isSameAsPreviousRequest) {
     logger.info(
-      `ℹ️ No changes detected, no files will be written. Use '${PROCESS_ARGUMENT_PARAMS.FORCE}' or '${PROCESS_ARGUMENT_PARAMS.FORCE_SHORT}' to force a new generation`
+      `ℹ️  No changes detected, no files will be written. Use '--${PROCESS_ARGUMENT_PARAMS.FORCE}' or '-${PROCESS_ARGUMENT_PARAMS.FORCE_SHORT}' to force a new generation`
     );
     return;
   }
 
   // Get the auth token to call the API with
-  const authIdToken = await getAuthIdToken();
+  // If the username and password are provided, use them to get the token
+  const username = params[PROCESS_ARGUMENT_PARAMS.USERNAME] as
+    | string
+    | undefined;
+  const password = params[PROCESS_ARGUMENT_PARAMS.PASSWORD] as
+    | string
+    | undefined;
+  let authIdToken: string = '';
+  if (username && password) {
+    authIdToken = await getIdTokenUsingUsernameAndPassword(username, password);
+  } else {
+    authIdToken = await getAuthIdToken();
+  }
 
   // Start the timer
   const startTime = process.hrtime.bigint();
@@ -112,8 +125,8 @@ export async function generateAndSave(
 
   // If the param to delete existing models is present, delete the existing models
   const shouldCleanModels =
-    params.includes(PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS) ||
-    params.includes(PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS_SHORT);
+    params[PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS] ||
+    params[PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS_SHORT];
 
   if (shouldCleanModels) {
     cleanModels(currentWorkingDirectory, existingConfig, allFiles);

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { cwd } from 'node:process';
 import { logger } from '@autographcraft/core';
 import { init } from './processFunctions/init';
 import { config } from './processFunctions/config';
@@ -7,16 +8,17 @@ import { help } from './processFunctions/help';
 import { generateAndSave } from './processFunctions/generateAndSave';
 import { PROCESS_ARGUMENT_PARAMS, PROCESS_ARGUMENT_VECTORS } from './constants';
 import type { ProcessFunction } from './types';
+import { getParams } from './helpers';
 
 // FUTURE: Allow the user to force a new login via a flag (for account changing)
 
 export async function main() {
-  const params = process.argv.slice(2);
-  const currentWorkingDirectory = process.cwd();
+  const params = getParams();
+  const currentWorkingDirectory = cwd();
 
   try {
     for (const processArg of PROCESS_ARGUMENT_VECTORS) {
-      if (!params.includes(processArg.argument)) {
+      if (!params._.includes(processArg.argument)) {
         continue;
       }
       let processFunctionToRun: ProcessFunction;
@@ -37,8 +39,8 @@ export async function main() {
 
       // If the params include the quiet flag, set the logger to quiet
       if (
-        params.includes(PROCESS_ARGUMENT_PARAMS.QUIET) ||
-        params.includes(PROCESS_ARGUMENT_PARAMS.QUIET_SHORT)
+        params[PROCESS_ARGUMENT_PARAMS.QUIET] ||
+        params[PROCESS_ARGUMENT_PARAMS.QUIET_SHORT]
       ) {
         logger.silent = true;
       }

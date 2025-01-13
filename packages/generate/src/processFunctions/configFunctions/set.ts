@@ -6,15 +6,16 @@ import type {
   AutoGraphCraftConfigurationField,
 } from '@autographcraft/core';
 import { checkThatProvidedValueIsAcceptableToKey } from './checkThatProvidedValueIsAcceptableToKey';
+import type { ProcessFunctionParams } from '../../types';
 
 export async function setConfigValue(
   currentWorkingDirectory: string,
-  params: string[],
+  params: ProcessFunctionParams,
   paramIndexConfig: number,
   existingConfig: AutoGraphCraftConfiguration
 ): Promise<void> {
-  const keyToSet = params[paramIndexConfig + 2];
-  const valueToSet = params[paramIndexConfig + 3];
+  const keyToSet = params._[paramIndexConfig + 2];
+  const valueToSet = params._[paramIndexConfig + 3];
 
   if (!Object.keys(DEFAULT_CONFIG).includes(keyToSet)) {
     logger.warn(

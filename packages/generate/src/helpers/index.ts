@@ -6,3 +6,4 @@ export { createTypesFileDetails } from './createTypesFileDetails';
 export { startRedirectServer } from './startRedirectServer';
 export { getFilesFromResponse } from './getFilesFromResponse';
 export { getPackageAndCustomScalars } from './getPackageAndCustomScalars';
+export { getParams } from './getParams';

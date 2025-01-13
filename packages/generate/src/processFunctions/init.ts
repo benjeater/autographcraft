@@ -19,6 +19,7 @@ import { getExistingConfiguration } from '../helpers';
 import { writeConfigFileAndUpdateGitIgnore } from './sharedFunctions';
 import { additionalQuestionsDatabase } from './initFunctions/additionalQuestionsDatabase';
 import { PROCESS_ARGUMENT_PARAMS } from '../constants';
+import type { ProcessFunctionParams } from '../types';
 
 /**
  * Initialises the application by adding asking the user questions,
@@ -30,7 +31,7 @@ import { PROCESS_ARGUMENT_PARAMS } from '../constants';
  */
 export async function init(
   currentWorkingDirectory: string,
-  params: string[]
+  params: ProcessFunctionParams
 ): Promise<void> {
   const configPath = join(currentWorkingDirectory, CONFIG_FILE_NAME);
 
@@ -56,8 +57,8 @@ export async function init(
 
   // Check if the defaults flag has been provided
   if (
-    params.includes(PROCESS_ARGUMENT_PARAMS.DEFAULT) ||
-    params.includes(PROCESS_ARGUMENT_PARAMS.DEFAULT_SHORT)
+    params[PROCESS_ARGUMENT_PARAMS.DEFAULT] ||
+    params[PROCESS_ARGUMENT_PARAMS.DEFAULT_SHORT]
   ) {
     logger.info('Creating configuration file with default values');
     writeConfigFileAndUpdateGitIgnore(
