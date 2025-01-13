@@ -1,6 +1,6 @@
 {
   "name": "@autographcraft/mongodb",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "The MongoDB resolver plugin for AutoGraphCraft",
   "main": "./dist/commonjs/app.js",
   "module": "./dist/esm/app.js",
@@ -45,7 +45,7 @@
     "url": "git+https://github.com/benjeater/autographcraft.git"
   },
   "dependencies": {
-    "@autographcraft/core": "^1.4.0",
+    "@autographcraft/core": "^1.5.0",
     "graphql": "^15.5.0",
     "lodash.clonedeep": "^4.5.0",
     "mongoose": "^8.8.3"
