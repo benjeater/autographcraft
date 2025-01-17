@@ -52,7 +52,7 @@
     "@inquirer/prompts": "^7.0.1",
     "graphql": "^15.5.0",
     "lodash.clonedeep": "^4.5.0",
-    "mongoose": "^8.8.3",
+    "mongoose": "^8.9.5",
     "mustache": "^4.2.0",
     "winston": "^3.17.0"
   },
