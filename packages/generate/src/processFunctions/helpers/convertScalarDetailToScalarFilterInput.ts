@@ -15,6 +15,10 @@ export function convertScalarDetailToScalarFilterInput(
   // filters cannot produce a valid filter input. Fail here with the name of the
   // offending scalar rather than letting `parse` report a syntax error against
   // generated text the user never wrote.
+  //
+  // Only a user supplied scalar can reach this, and those are not collected yet
+  // (see the TODO in `getPackageAndCustomScalars`); every scalar in
+  // `PACKAGE_SCALARS` has filters.
   if (scalar.filtersAvailable.length === 0) {
     throw new Error(
       `The scalar "${scalar.scalarName}" has no filters available. Add at least one filter to the "filtersAvailable" list for this scalar so that a valid "${scalar.scalarName}Input" filter input type can be generated.`
