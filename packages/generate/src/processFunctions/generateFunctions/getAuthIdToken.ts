@@ -73,6 +73,13 @@ export async function getAuthIdToken(): Promise<string> {
       logger.info(`Opening sign in page...`);
       logger.info(`Please sign in or sign up to continue...`);
 
+      // TODO: time the sign in flow out. This promise settles only when the
+      // redirect server receives a callback carrying all three tokens, and
+      // `startRedirectServer` deliberately rejects an incomplete redirect
+      // rather than proceeding with undefined tokens, so a provider that never
+      // sends a usable redirect leaves the CLI waiting with no way out but
+      // ctrl-c. A timeout should reject with a message naming the sign in step
+      // and close the redirect server.
       resolve(
         new Promise<string>((resolveSignIn, rejectSignIn) => {
           const callback = (authTokens: AuthTokens) => {

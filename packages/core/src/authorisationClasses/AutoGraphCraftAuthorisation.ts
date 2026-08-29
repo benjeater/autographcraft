@@ -87,6 +87,17 @@ export class AutoGraphCraftAuthorisation implements IAutoGraphCraftAuthorisation
       return this.checkSpecialModelAuthorisation(modelName);
     }
 
+    // A normal model is authorised one document at a time, so with no id there
+    // is no document to authorise. `hasAuthIdsForModel` answers the broader
+    // "does this caller reach any document of this model" question.
+    if (!idFieldValue) {
+      this.params.logger?.info({
+        message: `Checking document authorisation for ${modelName} without an id`,
+        hasAuthPermission: false,
+      });
+      return false;
+    }
+
     // Check if the document id is in the list of authorised ids
     const idToCheck = convertAuthIdToAuthFormat(modelName, idFieldValue);
     const hasAuthPermission = this.allAuthIds.has(idToCheck);
@@ -144,6 +155,11 @@ export class AutoGraphCraftAuthorisation implements IAutoGraphCraftAuthorisation
     this.idsPerModel = Array.from(this.allAuthIds).reduce(
       (acc, authId) => {
         const [modelName, id] = splitAuthFormatToModelNameAndAuthId(authId);
+        // An entry with no id cannot identify a document, so it would only
+        // put `undefined` into a list typed as strings.
+        if (id === undefined) {
+          return acc;
+        }
         acc[modelName] = acc[modelName] || [];
         acc[modelName].push(id);
         return acc;

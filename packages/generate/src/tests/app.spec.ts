@@ -18,6 +18,7 @@ const CURRENT_WORKING_DIRECTORY = '/home/user/project';
 // replaced explicitly: no arguments are parsed, no process function runs and
 // nothing is logged to the real logger.
 const getParams = jest.fn<() => ProcessFunctionParams>();
+const cwd = jest.fn<() => string>();
 const init =
   jest.fn<(cwd: string, params: ProcessFunctionParams) => Promise<void>>();
 const config =
@@ -42,9 +43,7 @@ jest.unstable_mockModule('../processFunctions/generateAndSave', () => ({
   generateAndSave,
 }));
 jest.unstable_mockModule('@autographcraft/core', () => ({ logger }));
-jest.unstable_mockModule('node:process', () => ({
-  cwd: () => CURRENT_WORKING_DIRECTORY,
-}));
+jest.unstable_mockModule('node:process', () => ({ cwd }));
 
 // `process.exit` is stubbed to throw so that execution stops where it would
 // stop in production. `main` wraps its body in a try/catch, so the thrown
@@ -73,18 +72,6 @@ async function runMain(): Promise<unknown> {
   );
 }
 
-/**
- * `ProcessFunctionParams` intersects `Record<string, string | boolean | number>`
- * with `_: string[]`, which no object literal can satisfy, so the params are
- * built through a single cast here rather than at every call site.
- */
-function buildParams(
-  commands: string[],
-  flags: Record<string, string | boolean | number> = {}
-): ProcessFunctionParams {
-  return { ...flags, _: commands } as unknown as ProcessFunctionParams;
-}
-
 function getFirstExitCode(): number | undefined {
   return exitSpy.mock.calls[0]?.[0] as number | undefined;
 }
@@ -93,7 +80,8 @@ describe('app', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     logger.silent = false;
-    getParams.mockReturnValue(buildParams([]));
+    getParams.mockReturnValue({ _: [] });
+    cwd.mockReturnValue(CURRENT_WORKING_DIRECTORY);
     init.mockResolvedValue(undefined);
     config.mockResolvedValue(undefined);
     help.mockResolvedValue(undefined);
@@ -119,7 +107,7 @@ describe('app', () => {
 
   it('should run the init process function for the init argument', async () => {
     // Arrange
-    const params = buildParams(['init']);
+    const params = { _: ['init'] };
     getParams.mockReturnValue(params);
 
     // Act
@@ -137,7 +125,7 @@ describe('app', () => {
 
   it('should run the config process function for the config argument', async () => {
     // Arrange
-    const params = buildParams(['config']);
+    const params = { _: ['config'] };
     getParams.mockReturnValue(params);
 
     // Act
@@ -152,7 +140,7 @@ describe('app', () => {
 
   it('should run the generateAndSave process function for the generate argument', async () => {
     // Arrange
-    const params = buildParams(['generate']);
+    const params = { _: ['generate'] };
     getParams.mockReturnValue(params);
 
     // Act
@@ -169,7 +157,7 @@ describe('app', () => {
 
   it('should run the help process function for the help argument', async () => {
     // Arrange
-    const params = buildParams(['help']);
+    const params = { _: ['help'] };
     getParams.mockReturnValue(params);
 
     // Act
@@ -183,7 +171,7 @@ describe('app', () => {
 
   it('should only run the first matching process function', async () => {
     // Arrange
-    getParams.mockReturnValue(buildParams(['config', 'init']));
+    getParams.mockReturnValue({ _: ['config', 'init'] });
 
     // Act
     await runMain();
@@ -196,9 +184,10 @@ describe('app', () => {
 
   it('should silence the logger before running the process function when the quiet flag is set', async () => {
     // Arrange
-    getParams.mockReturnValue(
-      buildParams(['generate'], { [PROCESS_ARGUMENT_PARAMS.QUIET]: true })
-    );
+    getParams.mockReturnValue({
+      _: ['generate'],
+      [PROCESS_ARGUMENT_PARAMS.QUIET]: true,
+    });
     let silentDuringRun: boolean | undefined;
     generateAndSave.mockImplementation(async () => {
       silentDuringRun = logger.silent;
@@ -214,9 +203,10 @@ describe('app', () => {
 
   it('should silence the logger when the short quiet flag is set', async () => {
     // Arrange
-    getParams.mockReturnValue(
-      buildParams(['generate'], { [PROCESS_ARGUMENT_PARAMS.QUIET_SHORT]: true })
-    );
+    getParams.mockReturnValue({
+      _: ['generate'],
+      [PROCESS_ARGUMENT_PARAMS.QUIET_SHORT]: true,
+    });
     let silentDuringRun: boolean | undefined;
     generateAndSave.mockImplementation(async () => {
       silentDuringRun = logger.silent;
@@ -231,7 +221,7 @@ describe('app', () => {
 
   it('should leave the logger unsilenced when the quiet flag is absent', async () => {
     // Arrange
-    getParams.mockReturnValue(buildParams(['generate']));
+    getParams.mockReturnValue({ _: ['generate'] });
     let silentDuringRun: boolean | undefined;
     generateAndSave.mockImplementation(async () => {
       silentDuringRun = logger.silent;
@@ -246,7 +236,7 @@ describe('app', () => {
 
   it('should warn and exit with 1 when the argument is not a known command', async () => {
     // Arrange
-    getParams.mockReturnValue(buildParams(['not-a-command']));
+    getParams.mockReturnValue({ _: ['not-a-command'] });
 
     // Act
     await runMain();
@@ -268,9 +258,10 @@ describe('app', () => {
   it('should unsilence the logger, log the error and exit with 1 when a process function throws', async () => {
     // Arrange
     const error = new Error('process function failed');
-    getParams.mockReturnValue(
-      buildParams(['generate'], { [PROCESS_ARGUMENT_PARAMS.QUIET]: true })
-    );
+    getParams.mockReturnValue({
+      _: ['generate'],
+      [PROCESS_ARGUMENT_PARAMS.QUIET]: true,
+    });
     generateAndSave.mockRejectedValueOnce(error);
 
     // Act
@@ -283,7 +274,7 @@ describe('app', () => {
     expect(getFirstExitCode()).toBe(1);
   });
 
-  it('should not handle an error thrown while parsing the arguments', async () => {
+  it('should log the error and exit with 1 when parsing the arguments throws', async () => {
     // Arrange
     const error = new Error('bad arguments');
     getParams.mockImplementation(() => {
@@ -291,13 +282,71 @@ describe('app', () => {
     });
 
     // Act
-    const thrown = await runMain();
+    await runMain();
 
     // Assert
-    // `getParams` is called outside the try/catch, so the failure escapes
-    // `main` unlogged rather than exiting with a message.
-    expect(thrown).toBe(error);
-    expect(logger.error).not.toHaveBeenCalled();
-    expect(exitSpy).not.toHaveBeenCalled();
+    // `getParams` is called inside the try/catch, so a parse failure is
+    // reported through the same handler as any other error rather than
+    // escaping `main` as an unhandled rejection.
+    expect(logger.error).toHaveBeenCalledWith(error);
+    expect(logger.end).toHaveBeenCalled();
+    expect(getFirstExitCode()).toBe(1);
+    expect(init).not.toHaveBeenCalled();
+    expect(config).not.toHaveBeenCalled();
+    expect(help).not.toHaveBeenCalled();
+    expect(generateAndSave).not.toHaveBeenCalled();
+  });
+
+  it('should unsilence the logger before reporting an argument parsing failure', async () => {
+    // Arrange
+    const error = new Error('bad arguments');
+    logger.silent = true;
+    getParams.mockImplementation(() => {
+      throw error;
+    });
+
+    // Act
+    await runMain();
+
+    // Assert
+    expect(logger.silent).toBe(false);
+    expect(logger.error).toHaveBeenCalledWith(error);
+  });
+
+  it('should log the error and exit with 1 when the working directory cannot be read', async () => {
+    // Arrange
+    const error = new Error('no working directory');
+    cwd.mockImplementation(() => {
+      throw error;
+    });
+
+    // Act
+    await runMain();
+
+    // Assert
+    expect(logger.error).toHaveBeenCalledWith(error);
+    expect(logger.end).toHaveBeenCalled();
+    expect(getFirstExitCode()).toBe(1);
+  });
+
+  it('should exit with 0 without dispatching a command when getParams exits the process', async () => {
+    // Arrange
+    // `getParams` prints the usage text and calls `process.exit(0)` itself when
+    // `--help` is passed, so it never returns a parsed argument set.
+    getParams.mockImplementation(() => process.exit(0));
+
+    // Act
+    await runMain();
+
+    // Assert
+    // In production `process.exit(0)` terminates here; the stub throws instead,
+    // so the catch records a follow-up `exit(1)` that production never reaches.
+    // The first requested exit code is the one that matters.
+    expect(getFirstExitCode()).toBe(0);
+    expect(init).not.toHaveBeenCalled();
+    expect(config).not.toHaveBeenCalled();
+    expect(help).not.toHaveBeenCalled();
+    expect(generateAndSave).not.toHaveBeenCalled();
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 });

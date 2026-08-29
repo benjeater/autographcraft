@@ -6,7 +6,12 @@ import { convertAuthIdToAuthFormat } from './convertAuthIdToAuthFormat';
 type ModelDocuments = {
   modelName: string;
   documents: mongoose.Document[];
-  childDocuments?: ModelDocuments[];
+  /**
+   * Always present, empty when the join has no joins of its own.
+   * `getChildDocumentsForJoin` is the only producer and always sets it, so
+   * consumers do not have to guard against it being absent.
+   */
+  childDocuments: ModelDocuments[];
 };
 
 /**
@@ -25,6 +30,12 @@ export async function loadMongoDbDataFromDatabase(
   const allAuthIds: string[] = [];
 
   for (const [modelName, id] of Object.entries(rootIds)) {
+    // A root id that was not provided identifies no document, so there is
+    // nothing to authorise; `ensureAllRootIdsAreProvided` has already logged it.
+    if (!id) {
+      continue;
+    }
+
     // For each entry in the params.authorisationStructure, add the id to the allAuthIds array
     allAuthIds.push(convertAuthIdToAuthFormat(modelName, id));
 
@@ -122,12 +133,10 @@ function flattenJoinedAuthResults(
       })
     );
 
-    if (joinedAuthResult.childDocuments) {
-      const childAuthIds = flattenJoinedAuthResults(
-        joinedAuthResult.childDocuments
-      );
-      allAuthIds.push(...childAuthIds);
-    }
+    const childAuthIds = flattenJoinedAuthResults(
+      joinedAuthResult.childDocuments
+    );
+    allAuthIds.push(...childAuthIds);
   }
 
   return allAuthIds;

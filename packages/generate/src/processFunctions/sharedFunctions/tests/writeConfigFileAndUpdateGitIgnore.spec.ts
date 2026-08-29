@@ -7,10 +7,15 @@ import {
   LOGGER_FILE_PATH,
 } from '@autographcraft/core';
 import {
+  GIT_IGNORE_EMPTY,
   GIT_IGNORE_FULLY_POPULATED,
   GIT_IGNORE_WITHOUT_LABEL,
+  GIT_IGNORE_WITHOUT_LABEL_OR_TRAILING_BLANK,
   GIT_IGNORE_WITH_EMPTY_LABEL,
+  GIT_IGNORE_WITH_EMPTY_LABEL_AND_LEADING_CONTENT,
   GIT_IGNORE_WITH_PREVIOUS_VALUES,
+  GIT_IGNORE_WITH_PREVIOUS_VALUES_ABOVE_AND_BELOW_LABEL,
+  GIT_IGNORE_WITH_PREVIOUS_VALUES_AND_LEADING_CONTENT,
   getDefaultConfig,
   getNewConfig,
   getPreviousConfig,
@@ -107,7 +112,49 @@ describe('writeConfigFileAndUpdateGitIgnore', () => {
       'node_modules',
       'dist',
       '',
+      GIT_IGNORE_LABEL,
+      LOGGER_FILE_PATH,
+      'src/models/*/*',
+      '!src/models/*/hookIns',
+      'src/generatedUtils',
+      'src/generatedDatabase',
+      'src/generatedTypes',
+    ]);
+  });
+
+  it('should separate the label from content that does not end with a blank line', () => {
+    // Arrange
+    readFileSync.mockReturnValueOnce(
+      GIT_IGNORE_WITHOUT_LABEL_OR_TRAILING_BLANK
+    );
+
+    // Act
+    writeConfigFileAndUpdateGitIgnore(CWD, getDefaultConfig(), undefined);
+
+    // Assert
+    expect(getWrittenGitIgnoreLines()).toEqual([
+      'node_modules',
+      'dist',
       '',
+      GIT_IGNORE_LABEL,
+      LOGGER_FILE_PATH,
+      'src/models/*/*',
+      '!src/models/*/hookIns',
+      'src/generatedUtils',
+      'src/generatedDatabase',
+      'src/generatedTypes',
+    ]);
+  });
+
+  it('should not write a leading blank line into an empty gitignore', () => {
+    // Arrange
+    readFileSync.mockReturnValueOnce(GIT_IGNORE_EMPTY);
+
+    // Act
+    writeConfigFileAndUpdateGitIgnore(CWD, getDefaultConfig(), undefined);
+
+    // Assert
+    expect(getWrittenGitIgnoreLines()).toEqual([
       GIT_IGNORE_LABEL,
       LOGGER_FILE_PATH,
       'src/models/*/*',
@@ -176,5 +223,97 @@ describe('writeConfigFileAndUpdateGitIgnore', () => {
       'src/newDatabase',
       'src/newTypes',
     ]);
+  });
+
+  // The index of a managed line is derived from the index of the label, so a
+  // label that is not near the top of the file is what distinguishes a correct
+  // origin from one that double-counts or drops it
+  describe('when the label is not at the top of the gitignore', () => {
+    it('should insert the new lines directly under the label', () => {
+      // Arrange
+      readFileSync.mockReturnValueOnce(
+        GIT_IGNORE_WITH_EMPTY_LABEL_AND_LEADING_CONTENT
+      );
+
+      // Act
+      writeConfigFileAndUpdateGitIgnore(
+        CWD,
+        getNewConfig(),
+        getPreviousConfig()
+      );
+
+      // Assert
+      expect(getWrittenGitIgnoreLines()).toEqual([
+        'node_modules',
+        'dist',
+        'coverage',
+        '',
+        GIT_IGNORE_LABEL,
+        LOGGER_FILE_PATH,
+        'src/newModels/*/*',
+        '!src/newModels/*/hookIns',
+        'src/newUtils',
+        'src/newDatabase',
+        'src/newTypes',
+      ]);
+    });
+
+    it('should replace the lines of the previous configuration in place', () => {
+      // Arrange
+      readFileSync.mockReturnValueOnce(
+        GIT_IGNORE_WITH_PREVIOUS_VALUES_AND_LEADING_CONTENT
+      );
+
+      // Act
+      writeConfigFileAndUpdateGitIgnore(
+        CWD,
+        getNewConfig(),
+        getPreviousConfig()
+      );
+
+      // Assert
+      expect(getWrittenGitIgnoreLines()).toEqual([
+        'node_modules',
+        'dist',
+        'coverage',
+        '',
+        GIT_IGNORE_LABEL,
+        'src/newTypes',
+        'src/newDatabase',
+        'src/newUtils',
+        'src/newModels/*/*',
+        '!src/newModels/*/hookIns',
+        LOGGER_FILE_PATH,
+      ]);
+    });
+
+    it('should only replace lines below the label', () => {
+      // Arrange
+      readFileSync.mockReturnValueOnce(
+        GIT_IGNORE_WITH_PREVIOUS_VALUES_ABOVE_AND_BELOW_LABEL
+      );
+
+      // Act
+      writeConfigFileAndUpdateGitIgnore(
+        CWD,
+        getNewConfig(),
+        getPreviousConfig()
+      );
+
+      // Assert
+      expect(getWrittenGitIgnoreLines()).toEqual([
+        // Lines above the label are not managed and are left alone
+        'src/oldTypes',
+        'src/oldDatabase',
+        '',
+        GIT_IGNORE_LABEL,
+        'src/newTypes',
+        'src/newDatabase',
+        'src/newUtils',
+        'src/newModels/*/*',
+        '!src/newModels/*/hookIns',
+        LOGGER_FILE_PATH,
+      ]);
+    });
   });
 });

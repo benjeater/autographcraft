@@ -1,4 +1,4 @@
-import { dirname } from 'path';
+import { basename, dirname } from 'path';
 import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import type { OutputFileDetail } from '@autographcraft/core';
 import { addIgnoreHeaderToContent } from '../helpers';
@@ -16,7 +16,7 @@ export function writeFilesToFileSystem(
   outputFiles.forEach((outputFile) => {
     const { filePath, content, addIgnoreHeader, shouldOverwrite } = outputFile;
 
-    const fileExtension = filePath.split('.').pop() || '';
+    const fileExtension = getFileExtension(filePath);
 
     const writableContent = addIgnoreHeader
       ? addIgnoreHeaderToContent(content, fileExtension)
@@ -43,4 +43,28 @@ export function writeFilesToFileSystem(
       .replace(/^\//, '');
     logger.info(`✅ File written: ${filePathRelativeToCwd}`);
   });
+}
+
+/**
+ * Derives the extension of the file at the given path.
+ *
+ * Only text following a dot within the file name itself is treated as an
+ * extension, so a path with no extension (`Makefile`), a dotfile
+ * (`.gitignore`), or a path whose only dot is in a directory name
+ * (`src/v1.2/Makefile`) all yield an empty string.
+ *
+ * @param filePath The path of the file to derive the extension from
+ * @returns The file extension without the leading dot, or an empty string
+ */
+function getFileExtension(filePath: string): string {
+  const fileName = basename(filePath);
+  const lastDotIndex = fileName.lastIndexOf('.');
+
+  // A dot at index 0 marks a dotfile (`.gitignore`), not an extension, and -1
+  // means there is no dot in the file name at all
+  if (lastDotIndex < 1) {
+    return '';
+  }
+
+  return fileName.slice(lastDotIndex + 1);
 }

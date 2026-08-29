@@ -8,7 +8,6 @@ import {
 } from '@jest/globals';
 import type { AutoGraphCraftConfiguration } from '@autographcraft/core';
 import type { ProcessFunctionParams } from '../../types';
-import { buildParams } from '../../tests/buildParams';
 
 // ESM has no automocking, so every module this unit reaches for is named
 // explicitly and the unit under test is imported after the mocks are
@@ -82,7 +81,7 @@ describe('config', () => {
   it('should warn and exit when there is no existing configuration', async () => {
     // Arrange
     getExistingConfiguration.mockResolvedValueOnce(undefined);
-    const params = buildParams(['config', 'set']);
+    const params = { _: ['config', 'set'] };
 
     // Act / Assert
     await expect(config(CWD, params)).rejects.toThrow('process.exit');
@@ -98,7 +97,7 @@ describe('config', () => {
 
   it('should warn and do nothing when the function after config is unknown', async () => {
     // Arrange
-    const params = buildParams(['config', 'unset']);
+    const params = { _: ['config', 'unset'] };
 
     // Act
     await config(CWD, params);
@@ -114,7 +113,7 @@ describe('config', () => {
 
   it('should warn when no function follows config at all', async () => {
     // Arrange
-    const params = buildParams(['config']);
+    const params = { _: ['config'] };
 
     // Act
     await config(CWD, params);
@@ -129,13 +128,9 @@ describe('config', () => {
     // Arrange
     const existingConfig = { ...DEFAULT_CONFIG };
     getExistingConfiguration.mockResolvedValueOnce(existingConfig);
-    const params = buildParams([
-      'npx',
-      'config',
-      'set',
-      'queriesDirectory',
-      'src/newQueries',
-    ]);
+    const params = {
+      _: ['npx', 'config', 'set', 'queriesDirectory', 'src/newQueries'],
+    };
 
     // Act
     await config(CWD, params);
@@ -151,7 +146,7 @@ describe('config', () => {
     // Arrange
     const existingConfig = { ...DEFAULT_CONFIG };
     getExistingConfiguration.mockResolvedValueOnce(existingConfig);
-    const params = buildParams(['config', 'setToDefault', 'queriesDirectory']);
+    const params = { _: ['config', 'setToDefault', 'queriesDirectory'] };
 
     // Act
     await config(CWD, params);

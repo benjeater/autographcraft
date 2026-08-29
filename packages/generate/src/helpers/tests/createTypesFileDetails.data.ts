@@ -37,26 +37,6 @@ export function getConfiguration(
 }
 
 /**
- * The files as they arrive from the API: POSIX separators and a leading slash.
- */
-export function getInputFiles(): OutputFileDetail[] {
-  return [
-    {
-      filePath: '/src/models/User/index.ts',
-      content: 'export const user = 1;',
-      addIgnoreHeader: false,
-      shouldOverwrite: false,
-    },
-    {
-      filePath: `/${GENERATED_TYPES_DIRECTORY}/${TYPE_DEFS_FILE_NAME}`,
-      content: PRINTABLE_SCHEMA,
-      addIgnoreHeader: true,
-      shouldOverwrite: true,
-    },
-  ];
-}
-
-/**
  * The path the printable schema file is expected to be found at once the
  * incoming paths have been normalised for the host platform.
  */
@@ -64,3 +44,25 @@ export const PRINTABLE_SCHEMA_PATH = join(
   GENERATED_TYPES_DIRECTORY,
   TYPE_DEFS_FILE_NAME
 );
+
+/**
+ * The files as this unit receives them: already stripped of their leading slash
+ * and moved onto the host platform's separator by `getFilesFromResponse`, which
+ * normalises at the boundary where the API's files enter the package.
+ */
+export function getInputFiles(): OutputFileDetail[] {
+  return [
+    {
+      filePath: join('src', 'models', 'User', 'index.ts'),
+      content: 'export const user = 1;',
+      addIgnoreHeader: false,
+      shouldOverwrite: false,
+    },
+    {
+      filePath: PRINTABLE_SCHEMA_PATH,
+      content: PRINTABLE_SCHEMA,
+      addIgnoreHeader: true,
+      shouldOverwrite: true,
+    },
+  ];
+}

@@ -1,5 +1,5 @@
 import { jest, beforeEach, describe, expect, it } from '@jest/globals';
-import { join, sep } from 'path';
+import { join } from 'path';
 import { TYPESCRIPT_TYPES_FILE_NAME } from '@autographcraft/core';
 import type { Types } from '@graphql-codegen/plugin-helpers';
 import { getPackageAndCustomScalars } from '../getPackageAndCustomScalars';
@@ -129,21 +129,24 @@ describe('createTypesFileDetails', () => {
     expect(result).toEqual([]);
   });
 
-  it('should normalise the incoming file paths onto the platform separator', async () => {
+  it('should not modify the files it is given', async () => {
     // Arrange
     const files = getInputFiles();
 
     // Act
-    await createTypesFileDetails(
+    const result = await createTypesFileDetails(
       CURRENT_WORKING_DIRECTORY,
       getConfiguration(),
       files
     );
 
     // Assert
-    expect(files[0].filePath).toBe(join('src', 'models', 'User', 'index.ts'));
-    expect(files[1].filePath).toBe(PRINTABLE_SCHEMA_PATH);
-    expect(files.every((file) => !file.filePath.startsWith(sep))).toBe(true);
+    // The schema was found, so the supplied paths were read, but the caller's
+    // file details are handed back untouched
+    expect(generate.mock.calls[0][0].schema).toBe(PRINTABLE_SCHEMA);
+    expect(files).toEqual(getInputFiles());
+    expect(result).not.toBe(files);
+    expect(result[0]).not.toBe(files[0]);
   });
 
   it('should throw when the printable schema file is not in the supplied files', async () => {

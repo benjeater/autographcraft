@@ -6,6 +6,7 @@ import {
   expect,
   it,
 } from '@jest/globals';
+import { join, sep } from 'path';
 import type { OutputFileDetail } from '@autographcraft/core';
 import { getFilesFromResponse } from '../getFilesFromResponse';
 import type { AutoGraphCraftApiResponse } from '../../types';
@@ -58,8 +59,48 @@ describe('getFilesFromResponse', () => {
     const result = await getFilesFromResponse(apiResponse);
 
     // Assert
-    expect(result).toEqual(files);
+    expect(result).toEqual([
+      {
+        ...getFiles()[0],
+        filePath: join('src', 'generatedTypes', 'typedefs.graphql'),
+      },
+    ]);
     expect(fetchMock).toHaveBeenCalledWith(apiResponse.signedUrl);
+  });
+
+  // The API always returns root-anchored, forward-slash paths, and every
+  // consumer writes `filePath` straight to the file system, so they are
+  // normalised here rather than by any one of those consumers.
+  it('should strip the leading slash and use the platform path separator', async () => {
+    // Arrange
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify(getFiles()), { status: 200 })
+    );
+
+    // Act
+    const [result] = await getFilesFromResponse(apiResponse);
+
+    // Assert
+    expect(result.filePath.startsWith(sep)).toBe(false);
+    expect(result.filePath).toBe(
+      ['src', 'generatedTypes', 'typedefs.graphql'].join(sep)
+    );
+  });
+
+  it('should leave an already normalised path alone', async () => {
+    // Arrange
+    const filePath = ['src', 'models', 'User', 'index.ts'].join(sep);
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify([{ ...getFiles()[0], filePath }]), {
+        status: 200,
+      })
+    );
+
+    // Act
+    const [result] = await getFilesFromResponse(apiResponse);
+
+    // Assert
+    expect(result.filePath).toBe(filePath);
   });
 
   it('should throw the response body when the status is an error', async () => {

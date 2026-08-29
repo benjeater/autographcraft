@@ -1,4 +1,4 @@
-import { GraphQLScalarType, Kind } from 'graphql';
+import { GraphQLError, GraphQLScalarType, Kind } from 'graphql';
 
 export const ISO8601DateTime = new GraphQLScalarType({
   name: 'ISO8601DateTime',
@@ -40,22 +40,33 @@ export const ISO8601DateTime = new GraphQLScalarType({
       );
     }
 
-    const newDate = new Date(value);
-
-    if (isNaN(newDate.getTime())) {
-      throw new Error('Invalid ISO8601 date string provided');
-    }
-
-    return newDate;
+    return parseISO8601DateTimeString(value);
   },
 
   parseLiteral(ast): Date | null {
+    // A literal is validated exactly as a variable value is; the node is
+    // attached so the error carries the location within the query document.
     if (ast.kind !== Kind.STRING) {
-      // Invalid hard-coded value (not an integer)
-      return null;
+      throw new GraphQLError(
+        'GraphQL ISO8601DateTime Scalar parser expected a `string`',
+        { nodes: ast }
+      );
     }
 
-    // Convert hard-coded AST string to Date
-    return new Date(ast.value);
+    try {
+      return parseISO8601DateTimeString(ast.value);
+    } catch (error) {
+      throw new GraphQLError((error as Error).message, { nodes: ast });
+    }
   },
 });
+
+function parseISO8601DateTimeString(value: string): Date {
+  const newDate = new Date(value);
+
+  if (isNaN(newDate.getTime())) {
+    throw new Error('Invalid ISO8601 date string provided');
+  }
+
+  return newDate;
+}

@@ -21,7 +21,6 @@ import {
   getSchema,
   getTypesFiles,
 } from './generateAndSave.data';
-import { buildParams } from '../../tests/buildParams';
 
 // ESM has no automocking, so every module this unit reaches for is named
 // explicitly and the unit under test is imported after the mocks are
@@ -111,7 +110,7 @@ const { logger, DEFAULT_CONFIG } = await import('@autographcraft/core');
 const { generateAndSave } = await import('../generateAndSave');
 
 const CWD = '/project';
-const NO_PARAMS = buildParams(['generate']);
+const NO_PARAMS = { _: ['generate'] };
 
 const exitSpy = jest.spyOn(process, 'exit').mockImplementation((): never => {
   throw new Error('process.exit');
@@ -218,9 +217,7 @@ describe('generateAndSave', () => {
 
   it('should announce a dry run and pass the flag on to the file writer', async () => {
     // Arrange
-    const params = buildParams(['generate'], {
-      [PROCESS_ARGUMENT_PARAMS.DRY_RUN]: true,
-    });
+    const params = { _: ['generate'], [PROCESS_ARGUMENT_PARAMS.DRY_RUN]: true };
 
     // Act
     await generateAndSave(CWD, params);
@@ -237,9 +234,10 @@ describe('generateAndSave', () => {
 
   it('should treat the short dry run flag the same way', async () => {
     // Arrange
-    const params = buildParams(['generate'], {
+    const params = {
+      _: ['generate'],
       [PROCESS_ARGUMENT_PARAMS.DRY_RUN_SHORT]: true,
-    });
+    };
 
     // Act
     await generateAndSave(CWD, params);
@@ -256,10 +254,11 @@ describe('generateAndSave', () => {
 
   it('should authenticate with the username and password when both are provided', async () => {
     // Arrange
-    const params = buildParams(['generate'], {
+    const params = {
+      _: ['generate'],
       [PROCESS_ARGUMENT_PARAMS.USERNAME]: 'user@example.com',
       [PROCESS_ARGUMENT_PARAMS.PASSWORD]: 'hunter2',
-    });
+    };
 
     // Act
     await generateAndSave(CWD, params);
@@ -279,9 +278,10 @@ describe('generateAndSave', () => {
 
   it('should fall back to the browser login when only the username is provided', async () => {
     // Arrange
-    const params = buildParams(['generate'], {
+    const params = {
+      _: ['generate'],
       [PROCESS_ARGUMENT_PARAMS.USERNAME]: 'user@example.com',
-    });
+    };
 
     // Act
     await generateAndSave(CWD, params);
@@ -309,9 +309,10 @@ describe('generateAndSave', () => {
     // Arrange
     const existingConfig = { ...DEFAULT_CONFIG };
     getExistingConfiguration.mockResolvedValueOnce(existingConfig);
-    const params = buildParams(['generate'], {
+    const params = {
+      _: ['generate'],
       [PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS]: true,
-    });
+    };
 
     // Act
     await generateAndSave(CWD, params);
@@ -325,9 +326,10 @@ describe('generateAndSave', () => {
 
   it('should clean the models for the short clean models flag', async () => {
     // Arrange
-    const params = buildParams(['generate'], {
+    const params = {
+      _: ['generate'],
       [PROCESS_ARGUMENT_PARAMS.CLEAN_MODELS_SHORT]: true,
-    });
+    };
 
     // Act
     await generateAndSave(CWD, params);
@@ -346,7 +348,6 @@ describe('generateAndSave', () => {
       outputFiles: [...getGeneratedFiles(), ...getTypesFiles()],
       isDryRun: undefined,
       startTime: expect.any(BigInt),
-      verbose: false,
     });
   });
 });

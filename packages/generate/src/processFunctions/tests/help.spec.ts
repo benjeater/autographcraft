@@ -31,15 +31,37 @@ describe('help', () => {
     );
   });
 
-  it('should resolve without waiting for the browser to open', async () => {
+  it('should wait for the browser to be opened before resolving', async () => {
     // Arrange
-    // `help` does not await `open`, so a never-settling call must not hang it
-    open.mockReturnValueOnce(new Promise<unknown>(() => {}));
+    // The caller exits the process as soon as `help` resolves, so it must not
+    // resolve before `open` has spawned the browser.
+    let spawnBrowser: (() => void) | undefined;
+    open.mockReturnValueOnce(
+      new Promise<unknown>((resolve) => {
+        spawnBrowser = () => resolve(undefined);
+      })
+    );
+    let hasResolved = false;
 
     // Act
-    const result = await help();
+    const helpPromise = help().then(() => {
+      hasResolved = true;
+    });
+    await Promise.resolve();
 
     // Assert
-    expect(result).toBeUndefined();
+    expect(hasResolved).toBe(false);
+    spawnBrowser?.();
+    await helpPromise;
+    expect(hasResolved).toBe(true);
+  });
+
+  it('should propagate a failure to open the browser', async () => {
+    // Arrange
+    const error = new Error('no browser available');
+    open.mockRejectedValueOnce(error);
+
+    // Act / Assert
+    await expect(help()).rejects.toThrow(error);
   });
 });

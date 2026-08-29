@@ -11,7 +11,6 @@ import type {
   AutoGraphCraftConfigurationField,
 } from '@autographcraft/core';
 import type { ProcessFunctionParams } from '../../../types';
-import { buildParams } from '../../../tests/buildParams';
 
 // ESM has no automocking, so every module this unit reaches for is named
 // explicitly and the unit under test is imported after the mocks are
@@ -70,7 +69,7 @@ function getExistingConfig(): AutoGraphCraftConfiguration {
 }
 
 function getParams(key: string, value: string): ProcessFunctionParams {
-  return buildParams(['config', 'set', key, value]);
+  return { _: ['config', 'set', key, value] };
 }
 
 describe('setConfigValue', () => {
@@ -109,13 +108,9 @@ describe('setConfigValue', () => {
 
   it('should read the key and value from the position after the config argument', async () => {
     // Arrange
-    const params = buildParams([
-      'npx',
-      'config',
-      'set',
-      'queriesDirectory',
-      'src/newQueries',
-    ]);
+    const params = {
+      _: ['npx', 'config', 'set', 'queriesDirectory', 'src/newQueries'],
+    };
 
     // Act
     await setConfigValue(CWD, params, 1, getExistingConfig());

@@ -133,7 +133,6 @@ export async function generateAndSave(
     outputFiles: allFiles,
     isDryRun,
     startTime,
-    verbose: false,
   };
   printStatistics(printStatisticsParams);
 }
