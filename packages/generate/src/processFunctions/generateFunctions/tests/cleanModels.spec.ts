@@ -1,17 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { readdirSync, rmSync } from 'node:fs';
-import { cleanModels } from '../cleanModels';
+import { jest, describe, expect, it } from '@jest/globals';
 
-jest.mock('@autographcraft/core', () => ({
+// ESM mock factories must provide every export the module graph reaches for -
+// a missing one is a SyntaxError, not `undefined` - so spread the real module
+// and override only the logger this suite needs silenced.
+const actualCore = jest.requireActual<typeof import('@autographcraft/core')>(
+  '@autographcraft/core'
+);
+
+jest.unstable_mockModule('@autographcraft/core', () => ({
+  ...actualCore,
   logger: {
     info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
   },
 }));
 
-jest.mock('node:fs', () => ({
+jest.unstable_mockModule('node:fs', () => ({
   readdirSync: jest.fn(),
   rmSync: jest.fn(),
 }));
+
+const { readdirSync, rmSync } = await import('node:fs');
+const { cleanModels } = await import('../cleanModels');
 
 const CWD = '/current/working/directory';
 
@@ -40,7 +52,7 @@ describe('cleanModels', () => {
       },
     ] as any;
 
-    (readdirSync as jest.Mock).mockReturnValueOnce([
+    (readdirSync as any).mockReturnValueOnce([
       { isDirectory: () => true, name: 'modelUser' },
       { isDirectory: () => true, name: 'modelEmployee' },
       { isDirectory: () => true, name: 'modelCompany' },

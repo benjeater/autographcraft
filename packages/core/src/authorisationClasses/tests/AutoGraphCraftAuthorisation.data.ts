@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { jest } from '@jest/globals';
 import cloneDeep from 'lodash.cloneDeep';
 import type { AutoGraphCraftAuthorisationParams } from '../types';
 import { DATABASE_CODES, MONGO_DB_CONNECTION_LIBRARY } from '../../types';

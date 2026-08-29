@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { jest } from '@jest/globals';
 import cloneDeep from 'lodash.cloneDeep';
 import { type MongoDbCreateResolverParams } from '../MongoDbCreateResolver';
 
