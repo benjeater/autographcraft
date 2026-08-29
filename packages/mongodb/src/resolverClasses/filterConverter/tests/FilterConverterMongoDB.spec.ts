@@ -372,7 +372,7 @@ describe('FilterConverterMongoDB', () => {
     const result = () => instance.convert();
 
     // Assert
-    expect(result).toThrowError(
+    expect(result).toThrow(
       'No filter class found for filter operator: $unknown on field: startDate'
     );
   });

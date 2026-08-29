@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AutoGraphCraftResolverContext } from '@autographcraft/core';
 
 export interface IFilterClass {

@@ -281,7 +281,7 @@ export class MongoDbListResolver<
         return Math.min(limit, this.context.autographcraft.maxListQueryLimit);
       }
       return limit;
-    } catch (err) {
+    } catch {
       this.context.autographcraft.logger?.warn(
         `An error occurred while getting the limit for the query; using default limit of ${DEFAULT_LIST_QUERY_LIMIT}`
       );
@@ -338,7 +338,7 @@ export class MongoDbListResolver<
         return {};
       }
       return parsedNextToken;
-    } catch (err) {
+    } catch {
       this.context.autographcraft.logger?.warn(
         'An error occurred while decoding the next token; using default next token values'
       );
@@ -352,7 +352,7 @@ export class MongoDbListResolver<
         skip: this.getSkipForQuery() + this.getLimitForQuery(),
       };
       return JSON.stringify(nextTokenDetails);
-    } catch (err) {
+    } catch {
       this.context.autographcraft.logger?.warn(
         'An error occurred while encoding the next token; returning null'
       );

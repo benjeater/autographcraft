@@ -21,7 +21,7 @@ export function getExistingAuthTokens(): AuthTokens | null {
     const jsonString = readFileSync(filepath, 'utf-8');
     const authTokens = JSON.parse(jsonString);
     return authTokens;
-  } catch (e) {
+  } catch {
     return null;
   }
 }

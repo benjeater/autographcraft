@@ -1,8 +1,19 @@
-import { validateAuthConfiguration } from '../validateAuthConfiguration';
+import { jest, beforeEach, describe, expect, it } from '@jest/globals';
 import { getExistingConfiguration } from './validateAuthConfiguration.data';
-import { logger } from '@autographcraft/core';
 
-jest.mock('@autographcraft/core');
+// ESM has no automocking, so the parts of core this unit touches are named
+// explicitly, and the unit under test is imported after the mock is registered.
+jest.unstable_mockModule('@autographcraft/core', () => ({
+  logger: {
+    error: jest.fn(),
+    warn: jest.fn(),
+    info: jest.fn(),
+  },
+}));
+
+const { logger } = await import('@autographcraft/core');
+const { validateAuthConfiguration } =
+  await import('../validateAuthConfiguration');
 
 describe('validateAuthConfiguration', () => {
   beforeEach(() => {

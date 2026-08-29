@@ -200,7 +200,7 @@ export class MongoDbUpdateResolver<
       if (key === 'id') {
         continue;
       }
-      // @ts-expect-error - This is a dynamic key, so we can't use dot notation
+      // This is a dynamic key, so we can't use dot notation
       documentInstance[key] = value;
     }
 

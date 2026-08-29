@@ -1,6 +1,6 @@
 import {
   GraphQLError,
-  // type GraphQLErrorOptions,
+  type GraphQLErrorOptions,
   type GraphQLErrorExtensions,
 } from 'graphql';
 
@@ -13,41 +13,25 @@ const ERROR_CODES: Record<string, string> = {
 
 export class InvalidInputError extends GraphQLError {
   constructor(message: string, extensions?: GraphQLErrorExtensions) {
-    const options = {
+    const options: GraphQLErrorOptions = {
       extensions: {
         code: ERROR_CODES.INVALID_INPUT,
         ...extensions,
       },
     };
-    super(
-      message,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      options.extensions
-    );
+    super(message, options);
   }
 }
 
 export class NotFoundError extends GraphQLError {
   constructor(message: string, extensions?: GraphQLErrorExtensions) {
-    const options = {
+    const options: GraphQLErrorOptions = {
       extensions: {
         code: ERROR_CODES.NOT_FOUND,
         ...extensions,
       },
     };
-    super(
-      message,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      options.extensions
-    );
+    super(message, options);
   }
 }
 
@@ -57,41 +41,25 @@ export class NoArchitecturalAccessError extends GraphQLError {
     operation: string,
     extensions?: GraphQLErrorExtensions
   ) {
-    const options = {
+    const options: GraphQLErrorOptions = {
       extensions: {
         code: ERROR_CODES.NO_ARCHITECTURAL_ACCESS,
         ...extensions,
       },
     };
     const message = `Caller does not have permission to perform the ${operation} operation on ${modelName}`;
-    super(
-      message,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      options.extensions
-    );
+    super(message, options);
   }
 }
 
 export class NotAuthorisedError extends GraphQLError {
   constructor(message: string, extensions?: GraphQLErrorExtensions) {
-    const options = {
+    const options: GraphQLErrorOptions = {
       extensions: {
         code: ERROR_CODES.NOT_AUTHORISED,
         ...extensions,
       },
     };
-    super(
-      message,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      options.extensions
-    );
+    super(message, options);
   }
 }
