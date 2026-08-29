@@ -52,13 +52,13 @@
     "@graphql-codegen/cli": "^7.3.1",
     "@graphql-codegen/plugin-helpers": "^7.2.1",
     "@graphql-codegen/typescript": "^6.1.0",
-    "@inquirer/prompts": "^7.2.0",
+    "@inquirer/prompts": "^8.7.0",
     "jwt-decode": "^4.0.0",
     "lodash.clonedeep": "^4.5.0",
-    "open": "^10.1.0",
-    "portfinder": "^1.0.32",
-    "uuid": "^11.0.3",
-    "yargs": "^17.7.2"
+    "open": "^11.0.1",
+    "portfinder": "^1.0.38",
+    "uuid": "^14.0.2",
+    "yargs": "^18.1.0"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^2.22.0",
@@ -67,7 +67,7 @@
     "@types/eslint": "^9.6.1",
     "@types/jest": "^30.0.0",
     "@types/lodash.clonedeep": "^4.5.9",
-    "@types/yargs": "^17.0.33",
+    "@types/yargs": "^17.0.35",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.11.0",
