@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "rootDir": "./src",
     "outDir": "./dist/commonjs",
-    "baseUrl": ".",
     "declaration": true,
     "emitDeclarationOnly": false,
     "sourceMap": false,

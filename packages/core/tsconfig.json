@@ -12,7 +12,6 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "baseUrl": ".",
     "emitDeclarationOnly": false,
     "sourceMap": false,
     "isolatedModules": true
