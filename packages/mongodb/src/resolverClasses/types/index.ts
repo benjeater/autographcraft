@@ -4,7 +4,7 @@ import type {
 } from '@autographcraft/core';
 import { HookInNames } from '@autographcraft/core';
 
-type HookInFunction = (
+export type HookInFunction = (
   parent: unknown,
   args: unknown,
   context: AutoGraphCraftResolverContext,

@@ -1,10 +1,21 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/**/*.spec.ts, src/**/*.data.ts"],
+  // The base config excludes `*.spec.*`/`*.data.*`, so the test program has to
+  // re-open the whole of `src`: the specs import the sources under test, and a
+  // composite project requires every imported file to be listed. Type checking
+  // only, so `composite` is off (it forbids `noEmit`) and the build's
+  // `.tsbuildinfo` is left alone.
+  "include": ["src/**/*"],
+  "exclude": ["./**/examples/*"],
   "compilerOptions": {
-    "outDir": "./dist",
-    "sourceMap": true,
     "noEmit": true,
+    "composite": false,
+    "incremental": false,
+    "sourceMap": true,
+    // Specs resolve `@autographcraft/*` to a sibling package's sources rather
+    // than its build output, so the program spans `packages/`. Nothing is
+    // emitted, so this only widens the containment check.
+    "rootDir": "..",
     "types": ["node", "jest"]
   }
 }

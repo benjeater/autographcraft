@@ -1,32 +1,14 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "outDir": "dist"
-  },
-  "exclude": [
-    "**/*.spec.ts",
-    "**/*.test.ts",
-    "**/*.spec.tsx",
-    "**/*.test.tsx",
-    "node_modules",
-    "dist",
-    "packages/*/dist",
-    "packages/*/node_modules",
-    "amplify",
-    "generated",
-    "./**/examples/*"
-  ],
+  // Solution-style entry point: `tsc -b tsconfig.build.json` builds every
+  // package in dependency order. The real work is done by the per-package
+  // ESM/CJS configs, so this file contributes no sources of its own.
+  "files": [],
   "references": [
-    {
-      "path": "./packages/core/tsconfig.build.json"
-    },
-    {
-      "path": "./packages/mongodb/tsconfig.build.json"
-    },
-    {
-      "path": "./packages/generate/tsconfig.build.json"
-    }
+    { "path": "./packages/core/tsconfig.buildesm.json" },
+    { "path": "./packages/core/tsconfig.buildcjs.json" },
+    { "path": "./packages/mongodb/tsconfig.buildesm.json" },
+    { "path": "./packages/mongodb/tsconfig.buildcjs.json" },
+    { "path": "./packages/generate/tsconfig.buildesm.json" },
+    { "path": "./packages/generate/tsconfig.buildcjs.json" }
   ]
 }
