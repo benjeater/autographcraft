@@ -21,8 +21,8 @@ export function removeUnauthorisedFieldsFromDocument<ReturnType>(
       continue;
     }
     if (!permittedFields.has(fieldName)) {
-      delete (document as Record<string, unknown>)[fieldName];
+      delete (documentCopy as Record<string, unknown>)[fieldName];
     }
   }
-  return document;
+  return documentCopy;
 }

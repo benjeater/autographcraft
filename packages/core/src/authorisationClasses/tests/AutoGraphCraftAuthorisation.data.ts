@@ -37,7 +37,10 @@ const defaultAuthorisationParams: AutoGraphCraftAuthorisationParams = {
     },
   ],
   logger: {
+    debug: jest.fn(),
     info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
   } as any,
 };
 
@@ -45,5 +48,17 @@ export function getDefaultAuthorisationParams() {
   const clonedParams = cloneDeep(defaultAuthorisationParams);
   // Required to ensure that the mongoose connection is shared between tests
   clonedParams.mongooseConnection = mongooseConnection;
+  return clonedParams;
+}
+
+export function getAuthorisationParamsWithoutLogger() {
+  const clonedParams = getDefaultAuthorisationParams();
+  delete clonedParams.logger;
+  return clonedParams;
+}
+
+export function getAuthorisationParamsWithUnsupportedDatabase() {
+  const clonedParams = getDefaultAuthorisationParams();
+  clonedParams.databaseType = DATABASE_CODES.DYNAMO_DB;
   return clonedParams;
 }

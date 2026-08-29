@@ -74,16 +74,15 @@ export async function getAuthIdToken(): Promise<string> {
       logger.info(`Please sign in or sign up to continue...`);
 
       resolve(
-        new Promise<string>((resolve) => {
-          try {
-            const callback = (authTokens: AuthTokens) => {
-              resolve(onTokenReceived(authTokens));
-            };
+        new Promise<string>((resolveSignIn, rejectSignIn) => {
+          const callback = (authTokens: AuthTokens) => {
+            resolveSignIn(onTokenReceived(authTokens));
+          };
 
-            openSignInPage(callback);
-          } catch (error) {
-            reject(error);
-          }
+          // `openSignInPage` is async, so a failure to find a free port or to
+          // start the redirect server arrives as a rejected promise rather
+          // than a synchronous throw. Without this the caller waits forever.
+          openSignInPage(callback).catch(rejectSignIn);
         })
       );
     } catch (error) {

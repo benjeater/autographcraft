@@ -4,7 +4,12 @@ import {
   getDefaultParamsHasOne,
   getDefaultParamsHasMany,
   getDefaultParamsHasManyWithJoins,
+  getParamsWithMissingRootDocument,
+  getParamsWithNoAuthStructureForRootModel,
+  getParamsWithNoJoins,
+  getParamsWithUnknownJoinType,
   DEFAULT_IDS,
+  UNKNOWN_JOIN_TYPE,
 } from './loadMongoDbDataFromDatabase.data';
 
 import { loadMongoDbDataFromDatabase } from '../loadMongoDbDataFromDatabase';
@@ -74,6 +79,65 @@ describe('loadMongoDbDataFromDatabase', () => {
         `TargetModelHasManyChild::${DEFAULT_IDS.TargetModelFour}`,
         `TargetModelHasManyChild::${DEFAULT_IDS.TargetModelFive}`,
       ])
+    );
+  });
+
+  it('should return only the root auth id when there is no authorisation structure for the root model', async () => {
+    // Arrange
+    const params = getParamsWithNoAuthStructureForRootModel();
+    const rootIds = {
+      RootModel: DEFAULT_IDS.RootModel,
+    };
+
+    // Act
+    const result = await loadMongoDbDataFromDatabase(params, rootIds);
+
+    // Assert
+    expect(result).toEqual(new Set([`RootModel::${DEFAULT_IDS.RootModel}`]));
+    expect(params.mongooseConnection.model).not.toHaveBeenCalled();
+  });
+
+  it('should return only the root auth id when the authorisation structure has no joins', async () => {
+    // Arrange
+    const params = getParamsWithNoJoins();
+    const rootIds = {
+      RootModel: DEFAULT_IDS.RootModel,
+    };
+
+    // Act
+    const result = await loadMongoDbDataFromDatabase(params, rootIds);
+
+    // Assert
+    expect(result).toEqual(new Set([`RootModel::${DEFAULT_IDS.RootModel}`]));
+    expect(params.mongooseConnection.model).not.toHaveBeenCalled();
+  });
+
+  it('should return only the root auth id when the root document cannot be found', async () => {
+    // Arrange
+    const params = getParamsWithMissingRootDocument();
+    const rootIds = {
+      RootModel: DEFAULT_IDS.RootModel,
+    };
+
+    // Act
+    const result = await loadMongoDbDataFromDatabase(params, rootIds);
+
+    // Assert
+    expect(result).toEqual(new Set([`RootModel::${DEFAULT_IDS.RootModel}`]));
+    expect(params.mongooseConnection.model).toHaveBeenCalledTimes(1);
+    expect(params.mongooseConnection.model).toHaveBeenCalledWith('RootModel');
+  });
+
+  it('should throw an error when the join type is not supported', async () => {
+    // Arrange
+    const params = getParamsWithUnknownJoinType();
+    const rootIds = {
+      RootModel: DEFAULT_IDS.RootModel,
+    };
+
+    // Act / Assert
+    await expect(loadMongoDbDataFromDatabase(params, rootIds)).rejects.toThrow(
+      `Unknown join type: ${UNKNOWN_JOIN_TYPE}`
     );
   });
 });

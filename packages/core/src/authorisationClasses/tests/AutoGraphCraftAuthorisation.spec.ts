@@ -1,6 +1,8 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import {
   DEFAULT_VALUES,
+  getAuthorisationParamsWithoutLogger,
+  getAuthorisationParamsWithUnsupportedDatabase,
   getDefaultAuthorisationParams,
   mongooseConnectionModelFind,
   mongooseConnectionModelFindById,
@@ -229,6 +231,18 @@ describe('AutoGraphCraftAuthorisation', () => {
       });
       expect(classInstance.hasAuthIdsForModel('admin')).toBeTruthy();
     });
+
+    it('should return true if there are auth ids for the model', async () => {
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+      expect(
+        classInstance.hasAuthIdsForModel(DEFAULT_VALUES.testModel)
+      ).toBeTruthy();
+    });
+
+    it('should return false if there are no auth ids for the model', async () => {
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+      expect(classInstance.hasAuthIdsForModel('OtherTestModel')).toBeFalsy();
+    });
   });
 
   describe('documentAuthorisation', () => {
@@ -285,6 +299,175 @@ describe('AutoGraphCraftAuthorisation', () => {
       await classInstance.initialise({ rootIds: { TestModel: '1' } });
       expect(
         classInstance.documentAuthorisation('OtherTestModel', '1')
+      ).toBeFalsy();
+    });
+  });
+
+  describe('getCacheableData', () => {
+    it('should return all the auth ids that were loaded', async () => {
+      // Arrange
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+
+      // Act
+      const result = classInstance.getCacheableData();
+
+      // Assert
+      expect(result).toEqual({
+        allAuthIds: ['TestModel::1'],
+        rootIds: { TestModel: '1' },
+        isAdmin: false,
+      });
+    });
+
+    it('should return the same data that it was initialised with from the cache', async () => {
+      // Arrange
+      const data = {
+        allAuthIds: ['TestModel::1', 'OtherTestModel::2'],
+        rootIds: { TestModel: '1' },
+        isAdmin: false,
+      };
+      await classInstance.initialiseWithCachedData(data);
+
+      // Act
+      const result = classInstance.getCacheableData();
+
+      // Assert
+      expect(result).toEqual(data);
+    });
+
+    it('should carry the admin flag through the cache', async () => {
+      // Arrange
+      await classInstance.initialise({
+        rootIds: { TestModel: '1' },
+        isAdmin: true,
+      });
+
+      // Act
+      const result = classInstance.getCacheableData();
+
+      // Assert
+      expect(result).toEqual({
+        allAuthIds: ['TestModel::1'],
+        rootIds: { TestModel: '1' },
+        isAdmin: true,
+      });
+    });
+  });
+
+  describe('round trip through the cache', () => {
+    // `rootIds` and `isAdmin` back the `signedIn` and `admin` checks. When
+    // `getCacheableData` dropped them, a caller authorised before caching was
+    // refused after it.
+    it('should still report a signed in caller as signed in', async () => {
+      // Arrange
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+      const cached = classInstance.getCacheableData();
+      const restored = new AutoGraphCraftAuthorisation(
+        getDefaultAuthorisationParams()
+      );
+
+      // Act
+      await restored.initialiseWithCachedData(cached);
+
+      // Assert
+      expect(restored.hasAuthIdsForModel('signedIn')).toBe(true);
+      expect(restored.documentAuthorisation('signedIn')).toBe(true);
+    });
+
+    it('should still report an admin caller as an admin', async () => {
+      // Arrange
+      await classInstance.initialise({
+        rootIds: { TestModel: '1' },
+        isAdmin: true,
+      });
+      const cached = classInstance.getCacheableData();
+      const restored = new AutoGraphCraftAuthorisation(
+        getDefaultAuthorisationParams()
+      );
+
+      // Act
+      await restored.initialiseWithCachedData(cached);
+
+      // Assert
+      expect(restored.hasAuthIdsForModel('admin')).toBe(true);
+      expect(restored.documentAuthorisation('admin')).toBe(true);
+    });
+
+    it('should treat a cache entry written before rootIds and isAdmin existed as anonymous', async () => {
+      // Arrange
+      const legacyEntry = { allAuthIds: ['TestModel::1'] };
+
+      // Act
+      await classInstance.initialiseWithCachedData(legacyEntry);
+
+      // Assert
+      expect(classInstance.hasAuthIdsForModel('signedIn')).toBe(false);
+      expect(classInstance.hasAuthIdsForModel('admin')).toBe(false);
+      expect(classInstance.getAuthIdsForModel('TestModel')).toEqual(['1']);
+    });
+  });
+
+  describe('when the class has not been initialised', () => {
+    it('should throw when getCacheableData is called', () => {
+      expect(() => classInstance.getCacheableData()).toThrow(
+        'AutoGraphCraftAuthorisation is not initialised'
+      );
+    });
+
+    it('should throw when hasAuthIdsForModel is called', () => {
+      expect(() =>
+        classInstance.hasAuthIdsForModel(DEFAULT_VALUES.testModel)
+      ).toThrow('AutoGraphCraftAuthorisation is not initialised');
+    });
+
+    it('should throw when documentAuthorisation is called', () => {
+      expect(() =>
+        classInstance.documentAuthorisation(DEFAULT_VALUES.testModel, '1')
+      ).toThrow('AutoGraphCraftAuthorisation is not initialised');
+    });
+
+    it('should throw when getAuthIdsForModel is called', () => {
+      expect(() =>
+        classInstance.getAuthIdsForModel(DEFAULT_VALUES.testModel)
+      ).toThrow('AutoGraphCraftAuthorisation is not initialised');
+    });
+  });
+
+  describe('when the database type is not supported', () => {
+    it('should throw when initialise is called', async () => {
+      // Arrange
+      classInstance = new AutoGraphCraftAuthorisation(
+        getAuthorisationParamsWithUnsupportedDatabase()
+      );
+
+      // Act / Assert
+      await expect(
+        classInstance.initialise({ rootIds: { TestModel: '1' } })
+      ).rejects.toThrow('Database type DYNAMO_DB not supported');
+    });
+  });
+
+  describe('when no logger is provided', () => {
+    beforeEach(() => {
+      classInstance = new AutoGraphCraftAuthorisation(
+        getAuthorisationParamsWithoutLogger()
+      );
+    });
+
+    it('should initialise without a logger when root ids are missing', async () => {
+      await expect(classInstance.initialise({})).resolves.toBeUndefined();
+    });
+
+    it('should authorise a document without a logger', async () => {
+      // Arrange
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+
+      // Act / Assert
+      expect(
+        classInstance.documentAuthorisation(DEFAULT_VALUES.testModel, '1')
+      ).toBeTruthy();
+      expect(
+        classInstance.documentAuthorisation(DEFAULT_VALUES.testModel, '2')
       ).toBeFalsy();
     });
   });

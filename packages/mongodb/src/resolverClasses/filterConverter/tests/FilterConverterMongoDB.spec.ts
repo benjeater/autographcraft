@@ -18,6 +18,7 @@ import {
   getOrOnlyParams,
   getNotOnlyParams,
   getFilterWithIdParams,
+  getFilterWithUndefinedFieldFilterParams,
 } from './FilterConverterMongoDB.data';
 
 import { FilterConverterMongoDB } from '../FilterConverterMongoDB';
@@ -354,6 +355,21 @@ describe('FilterConverterMongoDB', () => {
       _id: {
         $eq: '12345',
       },
+    });
+  });
+
+  it('should convert a field with an undefined filter into an empty filter', () => {
+    // Arrange
+    instance = new FilterConverterMongoDB(
+      getFilterWithUndefinedFieldFilterParams()
+    );
+
+    // Act
+    const result = instance.convert();
+
+    // Assert
+    expect(result).toEqual({
+      startDate: {},
     });
   });
 

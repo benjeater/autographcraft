@@ -1,8 +1,10 @@
-import { jest } from '@jest/globals';
+import { jest, describe, it, expect } from '@jest/globals';
+import { GraphQLError } from 'graphql';
 import { HookInNames, RESOLVER_NAME } from '@autographcraft/core';
 import { MongoDbCreateResolver } from '../MongoDbCreateResolver';
 import type { HookInFunction } from '../../types';
 import {
+  DEFAULT_VALUES,
   getDatabaseModelImplementationSave,
   getDatabaseModelImplementationValidate,
   getInitialisationParams,
@@ -191,5 +193,77 @@ describe('MongoDbCreateResolver', () => {
       initialisationParams.info,
       null
     );
+  });
+
+  it('should throw a NoArchitecturalAccessError when architectural authorisation fails', async () => {
+    // Arrange
+    const initialisationParams = getInitialisationParams();
+    initialisationParams.architecturalAuthorisation = jest.fn(
+      async () => false
+    );
+
+    // Act
+    const resolver = new MongoDbCreateResolver(initialisationParams);
+    const thrownError = await resolver.create().catch((err) => err);
+
+    // Assert
+    expect(thrownError).toBeInstanceOf(GraphQLError);
+    expect((thrownError as GraphQLError).message).toBe(
+      `Caller does not have permission to perform the ${RESOLVER_NAME.CREATE} operation on ${DEFAULT_VALUES.TEST_MODEL_NAME}`
+    );
+    expect((thrownError as GraphQLError).extensions.code).toBe(
+      'NO_ARCHITECTURAL_ACCESS'
+    );
+  });
+
+  it('should wrap a thrown value that is not an Error in a generic GraphQLError', async () => {
+    // Arrange
+    const initialisationParams = getInitialisationParams();
+    initialisationParams.architecturalAuthorisation = jest.fn(async () => {
+      throw 'a string that is not an Error';
+    });
+
+    // Act
+    const resolver = new MongoDbCreateResolver(initialisationParams);
+    const thrownError = await resolver.create().catch((err) => err);
+
+    // Assert
+    expect(thrownError).toBeInstanceOf(GraphQLError);
+    expect((thrownError as GraphQLError).message).toBe('An error occurred');
+  });
+
+  it('should pass the created document to the error hooks when the failure happens after the commit', async () => {
+    // Arrange
+    const initialisationParams = getInitialisationParams();
+    const errorHook = jest.fn<HookInFunction>();
+    const finalHook = jest.fn<HookInFunction>().mockImplementation(async () => {
+      throw new Error('Test final hook error');
+    });
+
+    initialisationParams.hookInFiles = [
+      {
+        hookPoint: HookInNames.FINAL,
+        defaultFunction: finalHook,
+        filename: 'testFileHook',
+        resolverName: RESOLVER_NAME.CREATE,
+        orderNumber: 1,
+      },
+      {
+        hookPoint: HookInNames.ERROR,
+        defaultFunction: errorHook,
+        filename: 'testFileHook',
+        resolverName: RESOLVER_NAME.CREATE,
+        orderNumber: 1,
+      },
+    ];
+
+    // Act
+    const resolver = new MongoDbCreateResolver(initialisationParams);
+    const action = async () => await resolver.create();
+
+    // Assert
+    await expect(action).rejects.toThrow('Test final hook error');
+    expect(errorHook).toHaveBeenCalledTimes(1);
+    expect(errorHook.mock.calls[0][4]).toEqual([getStandardUser()]);
   });
 });

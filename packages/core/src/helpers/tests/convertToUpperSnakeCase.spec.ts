@@ -50,4 +50,11 @@ describe('convertToUpperSnakeCase', () => {
     const result = convertToUpperSnakeCase(input);
     expect(result).toEqual(expected);
   });
+
+  it('should return an empty string when the input is an empty string', () => {
+    const input = '';
+    const expected = '';
+    const result = convertToUpperSnakeCase(input);
+    expect(result).toEqual(expected);
+  });
 });

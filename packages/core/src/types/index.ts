@@ -266,6 +266,13 @@ export type AutoGraphCraftAuthorisationInitialisationData = Record<
 
 export type AutoGraphCraftAuthorisationInitialisationFromCacheData = {
   allAuthIds: string[];
+  /**
+   * Optional so that cache entries written before these fields existed still
+   * deserialise; they degrade to `{}` / `false`, which is how such an entry
+   * already behaved. `getCacheableData` always writes both.
+   */
+  rootIds?: Record<string, string>;
+  isAdmin?: boolean;
 };
 
 export interface IAutoGraphCraftAuthorisation {

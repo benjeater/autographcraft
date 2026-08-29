@@ -103,7 +103,7 @@ export class MongoDbListResolver<
       if (!architecuralAuthorisationResponse) {
         throw new NoArchitecturalAccessError(
           this.modelName,
-          RESOLVER_NAME.READ
+          RESOLVER_NAME.LIST
         );
       }
 
@@ -249,10 +249,18 @@ export class MongoDbListResolver<
     }
 
     for (const key in filter) {
-      if (typeof filter[key] === 'object') {
-        return this.filterIncludesDeletedAtKey(
-          filter[key] as Record<string, unknown>
-        );
+      // `typeof null === 'object'`, so null values are excluded explicitly;
+      // recursing into one would throw in `Object.keys`.
+      if (typeof filter[key] === 'object' && filter[key] !== null) {
+        // Only a positive result ends the search - returning the recursive
+        // result outright would skip every sibling after the first object.
+        if (
+          this.filterIncludesDeletedAtKey(
+            filter[key] as Record<string, unknown>
+          )
+        ) {
+          return true;
+        }
       }
     }
 

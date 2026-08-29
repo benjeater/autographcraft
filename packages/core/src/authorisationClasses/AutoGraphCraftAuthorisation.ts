@@ -51,6 +51,11 @@ export class AutoGraphCraftAuthorisation implements IAutoGraphCraftAuthorisation
     data: AutoGraphCraftAuthorisationInitialisationFromCacheData
   ): Promise<void> {
     this.allAuthIds = new Set(data.allAuthIds);
+    // `rootIds` and `isAdmin` back the `signedIn` and `admin` checks, so an
+    // instance restored without them refuses callers that were authorised
+    // before caching.
+    this.rootIds = data.rootIds || {};
+    this.isAdmin = data.isAdmin || false;
     this.convertAllAuthIdsToIdsPerModel();
     this.isInitialised = true;
   }
@@ -59,6 +64,8 @@ export class AutoGraphCraftAuthorisation implements IAutoGraphCraftAuthorisation
     this.checkIfInitialised();
     return {
       allAuthIds: Array.from(this.allAuthIds),
+      rootIds: this.rootIds,
+      isAdmin: this.isAdmin,
     };
   }
 

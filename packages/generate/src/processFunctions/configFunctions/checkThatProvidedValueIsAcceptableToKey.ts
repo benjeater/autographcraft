@@ -1,7 +1,7 @@
 import { DATABASE_CODES, logger } from '@autographcraft/core';
 
-const ENUM_FIELDS = {
-  databaseType: DATABASE_CODES,
+const ENUM_FIELDS: Record<string, string[]> = {
+  databaseType: Object.values(DATABASE_CODES),
 };
 
 /**
@@ -18,8 +18,7 @@ export function checkThatProvidedValueIsAcceptableToKey(
     return true;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const enums: string[] = (ENUM_FIELDS as any)[keyToSet as any];
+  const enums = ENUM_FIELDS[keyToSet];
 
   if (!enums.includes(valueToSet)) {
     logger.warn(

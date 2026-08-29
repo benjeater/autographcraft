@@ -22,6 +22,13 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   passWithNoTests: true,
+  // Coverage is measured across every source file, not just the ones a test
+  // happens to import, so untested modules show up as 0% instead of silently
+  // being left out of the totals. Test fixtures (`tests/` directories and
+  // `.spec.ts` files) are not production code, so they are excluded.
+  collectCoverageFrom: ['src/**/*.ts', '!src/**/tests/**', '!src/**/*.spec.ts'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/tests/'],
+  coverageReporters: ['text', 'lcov'],
   rootDir: '.',
   verbose: true,
   setupFiles: ['<rootDir>/jest.setup.ts'],

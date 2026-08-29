@@ -66,7 +66,7 @@ export class MongoDbUpdateResolver<
       if (!architecuralAuthorisationResponse) {
         throw new NoArchitecturalAccessError(
           this.modelName,
-          RESOLVER_NAME.READ
+          RESOLVER_NAME.UPDATE
         );
       }
 
