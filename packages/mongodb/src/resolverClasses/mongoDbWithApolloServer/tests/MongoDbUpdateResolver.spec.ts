@@ -230,7 +230,7 @@ describe('MongoDbUpdateResolver', () => {
       // Assert
       expect(thrownError).toBeInstanceOf(GraphQLError);
       expect((thrownError as GraphQLError).message).toBe(
-        `Caller does not have permission to perform the ${RESOLVER_NAME.READ} operation on ${DEFAULT_VALUES.TEST_MODEL_NAME}`
+        `Caller does not have permission to perform the ${RESOLVER_NAME.UPDATE} operation on ${DEFAULT_VALUES.TEST_MODEL_NAME}`
       );
       expect(findOneMock).toHaveBeenCalledTimes(0);
     });

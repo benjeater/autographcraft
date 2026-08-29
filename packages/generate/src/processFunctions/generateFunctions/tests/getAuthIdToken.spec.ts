@@ -239,4 +239,27 @@ describe('getAuthIdToken', () => {
     await expect(getAuthIdToken()).rejects.toThrow('Invalid token specified');
     expect(startRedirectServer).not.toHaveBeenCalled();
   });
+
+  // `openSignInPage` is async, so these failures surface as a rejected promise
+  // rather than a synchronous throw. Before they were passed on to the caller
+  // they became unhandled rejections and `getAuthIdToken` never settled.
+  it('should reject when no free port can be found', async () => {
+    // Arrange
+    getExistingAuthTokens.mockReturnValue(null);
+    getPortPromise.mockRejectedValueOnce(new Error('No open port found'));
+
+    // Act / Assert
+    await expect(getAuthIdToken()).rejects.toThrow('No open port found');
+    expect(startRedirectServer).not.toHaveBeenCalled();
+  });
+
+  it('should reject when the redirect server cannot be started', async () => {
+    // Arrange
+    getExistingAuthTokens.mockReturnValue(null);
+    startRedirectServer.mockRejectedValueOnce(new Error('EADDRINUSE'));
+
+    // Act / Assert
+    await expect(getAuthIdToken()).rejects.toThrow('EADDRINUSE');
+    expect(open).toHaveBeenCalledTimes(1);
+  });
 });

@@ -312,12 +312,20 @@ describe('AutoGraphCraftAuthorisation', () => {
       const result = classInstance.getCacheableData();
 
       // Assert
-      expect(result).toEqual({ allAuthIds: ['TestModel::1'] });
+      expect(result).toEqual({
+        allAuthIds: ['TestModel::1'],
+        rootIds: { TestModel: '1' },
+        isAdmin: false,
+      });
     });
 
     it('should return the same data that it was initialised with from the cache', async () => {
       // Arrange
-      const data = { allAuthIds: ['TestModel::1', 'OtherTestModel::2'] };
+      const data = {
+        allAuthIds: ['TestModel::1', 'OtherTestModel::2'],
+        rootIds: { TestModel: '1' },
+        isAdmin: false,
+      };
       await classInstance.initialiseWithCachedData(data);
 
       // Act
@@ -325,6 +333,77 @@ describe('AutoGraphCraftAuthorisation', () => {
 
       // Assert
       expect(result).toEqual(data);
+    });
+
+    it('should carry the admin flag through the cache', async () => {
+      // Arrange
+      await classInstance.initialise({
+        rootIds: { TestModel: '1' },
+        isAdmin: true,
+      });
+
+      // Act
+      const result = classInstance.getCacheableData();
+
+      // Assert
+      expect(result).toEqual({
+        allAuthIds: ['TestModel::1'],
+        rootIds: { TestModel: '1' },
+        isAdmin: true,
+      });
+    });
+  });
+
+  describe('round trip through the cache', () => {
+    // `rootIds` and `isAdmin` back the `signedIn` and `admin` checks. When
+    // `getCacheableData` dropped them, a caller authorised before caching was
+    // refused after it.
+    it('should still report a signed in caller as signed in', async () => {
+      // Arrange
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+      const cached = classInstance.getCacheableData();
+      const restored = new AutoGraphCraftAuthorisation(
+        getDefaultAuthorisationParams()
+      );
+
+      // Act
+      await restored.initialiseWithCachedData(cached);
+
+      // Assert
+      expect(restored.hasAuthIdsForModel('signedIn')).toBe(true);
+      expect(restored.documentAuthorisation('signedIn')).toBe(true);
+    });
+
+    it('should still report an admin caller as an admin', async () => {
+      // Arrange
+      await classInstance.initialise({
+        rootIds: { TestModel: '1' },
+        isAdmin: true,
+      });
+      const cached = classInstance.getCacheableData();
+      const restored = new AutoGraphCraftAuthorisation(
+        getDefaultAuthorisationParams()
+      );
+
+      // Act
+      await restored.initialiseWithCachedData(cached);
+
+      // Assert
+      expect(restored.hasAuthIdsForModel('admin')).toBe(true);
+      expect(restored.documentAuthorisation('admin')).toBe(true);
+    });
+
+    it('should treat a cache entry written before rootIds and isAdmin existed as anonymous', async () => {
+      // Arrange
+      const legacyEntry = { allAuthIds: ['TestModel::1'] };
+
+      // Act
+      await classInstance.initialiseWithCachedData(legacyEntry);
+
+      // Assert
+      expect(classInstance.hasAuthIdsForModel('signedIn')).toBe(false);
+      expect(classInstance.hasAuthIdsForModel('admin')).toBe(false);
+      expect(classInstance.getAuthIdsForModel('TestModel')).toEqual(['1']);
     });
   });
 

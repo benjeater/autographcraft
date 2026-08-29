@@ -131,7 +131,16 @@ export class MongoDbDeleteResolver<
       const update = { deletedAt: new Date() };
       const databaseDocumentInstance =
         await this._databaseModel.findOneAndUpdate(filter, update);
-      databaseDocument = databaseDocumentInstance!.toObject({
+
+      // The filter still requires `deletedAt: null`, so a concurrent delete
+      // between the fetch above and this update leaves nothing to update.
+      if (!databaseDocumentInstance) {
+        throw new NotFoundError(
+          `Document with id ${this.args.id} does not exist, or has already been deleted`
+        );
+      }
+
+      databaseDocument = databaseDocumentInstance.toObject({
         virtuals: true,
       }) as ReturnType;
 

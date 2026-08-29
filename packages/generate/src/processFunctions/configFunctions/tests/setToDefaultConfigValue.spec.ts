@@ -38,12 +38,8 @@ jest.unstable_mockModule('../../sharedFunctions', () => ({
   validateAuthConfiguration,
 }));
 
-// `setToDefaultConfigValue.ts` does not await this call, so the mock is typed
-// to allow a non-promise return; see the dead-guard test below.
 const questionSetConfigurationValueToDefaultConfirmation =
-  jest.fn<
-    (key: AutoGraphCraftConfigurationField) => Promise<boolean> | undefined
-  >();
+  jest.fn<(key: AutoGraphCraftConfigurationField) => Promise<boolean>>();
 
 jest.unstable_mockModule('../questions', () => ({
   questionSetConfigurationValueConfirmation: jest.fn(),
@@ -136,29 +132,10 @@ describe('setToDefaultConfigValue', () => {
     expect(exitSpy).not.toHaveBeenCalled();
   });
 
-  // The confirmation is called without `await`, so in production the guard
-  // below always sees a truthy promise and the user's answer is ignored.
-  it('should write the configuration even when the user answers no, because the answer is not awaited', async () => {
+  it('should return without writing when the user answers no', async () => {
     // Arrange
     questionSetConfigurationValueToDefaultConfirmation.mockReturnValueOnce(
       Promise.resolve(false)
-    );
-    const params = getParams('queriesDirectory');
-
-    // Act
-    await setToDefaultConfigValue(CWD, params, 0, getExistingConfig());
-
-    // Assert
-    expect(writeConfigFileAndUpdateGitIgnore).toHaveBeenCalledTimes(1);
-    expect(logger.info).not.toHaveBeenCalled();
-  });
-
-  // Reaching the guard at all requires a falsy, non-promise answer, which the
-  // real (async) question function can never return.
-  it('should return without writing when the confirmation answer is falsy', async () => {
-    // Arrange
-    questionSetConfigurationValueToDefaultConfirmation.mockReturnValueOnce(
-      undefined
     );
     const params = getParams('queriesDirectory');
 

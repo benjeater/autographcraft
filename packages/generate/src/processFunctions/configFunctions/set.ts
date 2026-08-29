@@ -26,7 +26,7 @@ export async function setConfigValue(
   }
 
   const answerSetConfigurationValueConfirmation =
-    questionSetConfigurationValueConfirmation(
+    await questionSetConfigurationValueConfirmation(
       keyToSet as AutoGraphCraftConfigurationField,
       valueToSet
     );

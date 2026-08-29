@@ -24,7 +24,7 @@ export async function setToDefaultConfigValue(
   }
 
   const answerSetConfigurationValueConfirmation =
-    questionSetConfigurationValueToDefaultConfirmation(
+    await questionSetConfigurationValueToDefaultConfirmation(
       keyToSet as AutoGraphCraftConfigurationField
     );
   if (!answerSetConfigurationValueConfirmation) {

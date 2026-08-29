@@ -117,6 +117,61 @@ describe('MongoDbListResolver', () => {
         $and: [{ $and: [{ deletedAt: { $exists: true } }] }],
       });
     });
+
+    it('should not overwrite a deletedAt filter that follows an earlier object valued key', async () => {
+      // Arrange
+      // The search used to return on the first object valued key, so a
+      // deletedAt under any later sibling was missed and the injected
+      // `deletedAt: null` then contradicted the caller's own filter.
+      const { initialisationParams, findMock } = getTestSetup();
+      initialisationParams.args.filter = {
+        firstName: { eq: 'firstNameTest' },
+        and: [{ deletedAt: { exists: true } }],
+      };
+
+      // Act
+      const resolver = new MongoDbListResolver<ListArgs, TestUser, ListReturn>(
+        initialisationParams
+      );
+      await resolver.list();
+
+      // Assert
+      const [filterArgument] = findMock.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
+      expect(filterArgument).toEqual({
+        $and: [
+          {
+            firstName: { $eq: 'firstNameTest' },
+            $and: [{ deletedAt: { $exists: true } }],
+          },
+        ],
+      });
+    });
+
+    it('should add a deletedAt filter when a null valued key precedes no deletedAt key', async () => {
+      // Arrange
+      // `typeof null === 'object'`, so recursing into a null value used to
+      // throw in `Object.keys` and surface as an opaque GraphQLError.
+      const { initialisationParams, findMock } = getTestSetup();
+      initialisationParams.args.filter = {
+        firstName: null,
+      } as unknown as ListArgs['filter'];
+
+      // Act
+      const resolver = new MongoDbListResolver<ListArgs, TestUser, ListReturn>(
+        initialisationParams
+      );
+      await resolver.list();
+
+      // Assert
+      const [filterArgument] = findMock.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
+      expect(filterArgument).toEqual({
+        $and: [{ firstName: {}, ...DELETED_AT_FILTER }],
+      });
+    });
   });
 
   describe('filter combination', () => {
@@ -660,7 +715,7 @@ describe('MongoDbListResolver', () => {
 
       // Assert
       await expect(action).rejects.toThrow(
-        `Caller does not have permission to perform the ${RESOLVER_NAME.READ} operation on ${DEFAULT_VALUES.TEST_MODEL_NAME}`
+        `Caller does not have permission to perform the ${RESOLVER_NAME.LIST} operation on ${DEFAULT_VALUES.TEST_MODEL_NAME}`
       );
       expect(findMock).toHaveBeenCalledTimes(0);
     });

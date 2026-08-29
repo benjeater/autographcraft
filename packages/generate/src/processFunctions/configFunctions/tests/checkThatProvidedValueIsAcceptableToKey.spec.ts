@@ -43,22 +43,41 @@ describe('checkThatProvidedValueIsAcceptableToKey', () => {
     expect(logger.warn).not.toHaveBeenCalled();
   });
 
-  // `ENUM_FIELDS.databaseType` is set to the `DATABASE_CODES` enum object
-  // rather than a list of its values, so the `enums.includes(...)` lookup on
-  // line 24 throws for every value. The acceptable/unacceptable branches below
-  // it are therefore unreachable until the source uses `Object.values(...)`.
-  it('should throw for an enum constrained key because the enum object is not an array', () => {
+  it('should return true for a value in the enum of a constrained key', () => {
+    // Act
+    const result = checkThatProvidedValueIsAcceptableToKey(
+      'databaseType',
+      DATABASE_CODES.MONGO_DB
+    );
+
     // Assert
-    expect(Array.isArray(DATABASE_CODES)).toBe(false);
-    expect(() =>
-      checkThatProvidedValueIsAcceptableToKey(
-        'databaseType',
-        DATABASE_CODES.MONGO_DB
-      )
-    ).toThrow(TypeError);
-    expect(() =>
-      checkThatProvidedValueIsAcceptableToKey('databaseType', 'NOT_A_DATABASE')
-    ).toThrow(TypeError);
+    expect(result).toBe(true);
+    expect(logger.warn).not.toHaveBeenCalled();
+  });
+
+  it('should warn and return false for a value outside the enum of a constrained key', () => {
+    // Act
+    const result = checkThatProvidedValueIsAcceptableToKey(
+      'databaseType',
+      'NOT_A_DATABASE'
+    );
+
+    // Assert
+    expect(result).toBe(false);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `Unable to set databaseType to NOT_A_DATABASE; acceptable values: [${Object.values(
+        DATABASE_CODES
+      ).join(', ')}]`
+    );
+  });
+
+  it('should accept every value of the enum it constrains', () => {
+    // Act / Assert
+    for (const databaseCode of Object.values(DATABASE_CODES)) {
+      expect(
+        checkThatProvidedValueIsAcceptableToKey('databaseType', databaseCode)
+      ).toBe(true);
+    }
     expect(logger.warn).not.toHaveBeenCalled();
   });
 });

@@ -119,4 +119,24 @@ describe('removeUnauthorisedFieldsFromDocument', () => {
     // Assert
     expect(result).toEqual({});
   });
+
+  // The function used to delete from, and return, the document it was given,
+  // so the caller's object - a live Mongoose document, a cache entry - silently
+  // lost the same fields.
+  it('should not mutate the document it is given', () => {
+    // Arrange
+    const document = getStandardDocument();
+    const untouched = getStandardDocument();
+
+    // Act
+    const result = removeUnauthorisedFieldsFromDocument<TestDocument>(
+      document,
+      new Set(['firstName'])
+    );
+
+    // Assert
+    expect(document).toEqual(untouched);
+    expect(result).not.toBe(document);
+    expect(result).not.toHaveProperty('lastName');
+  });
 });

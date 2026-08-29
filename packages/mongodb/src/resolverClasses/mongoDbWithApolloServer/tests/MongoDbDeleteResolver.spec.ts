@@ -473,10 +473,10 @@ describe('MongoDbDeleteResolver', () => {
       await expect(action).rejects.toThrow('An error occurred');
     });
 
-    it('should surface a generic error when the update does not return a document', async () => {
+    it('should throw a NotFoundError when the document is deleted between the fetch and the update', async () => {
       // Arrange
-      // `findOneAndUpdate` is dereferenced with a non-null assertion, so a null
-      // result becomes a TypeError that is wrapped as a GraphQLError.
+      // The update filter still requires `deletedAt: null`, so a concurrent
+      // delete leaves nothing to update and `findOneAndUpdate` resolves null.
       const { initialisationParams, findOneAndUpdateMock } = setup;
       findOneAndUpdateMock.mockResolvedValue(null);
 
@@ -491,7 +491,10 @@ describe('MongoDbDeleteResolver', () => {
 
       // Assert
       expect(thrownError).toBeInstanceOf(GraphQLError);
-      expect((thrownError as GraphQLError).message).toContain('toObject');
+      expect((thrownError as GraphQLError).message).toBe(
+        `Document with id ${DEFAULT_VALUES.TEST_DOCUMENT_ID} does not exist, or has already been deleted`
+      );
+      expect((thrownError as GraphQLError).extensions.code).toBe('NOT_FOUND');
     });
 
     it('should pass the fetched document to the error hook when the commit fails', async () => {
