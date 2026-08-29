@@ -76,17 +76,13 @@ export async function generateAndSave(
   // Get the auth token to call the API with
   // If the username and password are provided, use them to get the token
   const username = params[PROCESS_ARGUMENT_PARAMS.USERNAME] as
-    | string
-    | undefined;
+    string | undefined;
   const password = params[PROCESS_ARGUMENT_PARAMS.PASSWORD] as
-    | string
-    | undefined;
-  let authIdToken: string = '';
-  if (username && password) {
-    authIdToken = await getIdTokenUsingUsernameAndPassword(username, password);
-  } else {
-    authIdToken = await getAuthIdToken();
-  }
+    string | undefined;
+  const authIdToken: string =
+    username && password
+      ? await getIdTokenUsingUsernameAndPassword(username, password)
+      : await getAuthIdToken();
 
   // Start the timer
   const startTime = process.hrtime.bigint();

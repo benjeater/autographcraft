@@ -19,9 +19,7 @@ import type {
  * to access a specific resolver and document.  This class is instantiated in the context of the
  * application and is passed to all resolvers in the context object.
  */
-export class AutoGraphCraftAuthorisation
-  implements IAutoGraphCraftAuthorisation
-{
+export class AutoGraphCraftAuthorisation implements IAutoGraphCraftAuthorisation {
   private isInitialised = false;
   private params: AutoGraphCraftAuthorisationParams;
   private allAuthIds: Set<string> = new Set([]);

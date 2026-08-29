@@ -5,17 +5,16 @@ import { STORED_DETAILS_DIR_NAME, TOKEN_FILE_NAME } from '../../constants';
 // ESM has no automocking, so the members this unit reaches for are named
 // explicitly, and the unit under test is imported after the mocks are
 // registered.
-jest.unstable_mockModule('node:fs', () => ({
-  existsSync: jest.fn(),
-  readFileSync: jest.fn(),
-}));
+const existsSync = jest.fn<(path: string) => boolean>();
+const readFileSync = jest.fn<(path: string, encoding: string) => string>();
+
+jest.unstable_mockModule('node:fs', () => ({ existsSync, readFileSync }));
 
 jest.unstable_mockModule('os', () => ({
   default: { userInfo: jest.fn(() => ({ homedir: '/home/user' })) },
   userInfo: jest.fn(() => ({ homedir: '/home/user' })),
 }));
 
-const { existsSync, readFileSync } = await import('node:fs');
 const { getExistingAuthTokens } = await import('../getExistingAuthTokens');
 
 const homedir = '/home/user';
@@ -24,8 +23,8 @@ const authTokens = `{ "idToken": "testIdToken", "accessToken": "testAccessToken"
 
 describe('getExistingAuthTokens', () => {
   beforeEach(() => {
-    (existsSync as jest.Mock<any>).mockReturnValue(true);
-    (readFileSync as jest.Mock<any>).mockReturnValue(authTokens);
+    existsSync.mockReturnValue(true);
+    readFileSync.mockReturnValue(authTokens);
     jest.clearAllMocks();
   });
 
@@ -36,7 +35,7 @@ describe('getExistingAuthTokens', () => {
 
   it('should return null if the file does not exist', () => {
     // Arrange
-    (existsSync as jest.Mock<any>).mockReturnValueOnce(false);
+    existsSync.mockReturnValueOnce(false);
 
     // Act
     const result = getExistingAuthTokens();
@@ -46,7 +45,7 @@ describe('getExistingAuthTokens', () => {
 
   it('should return null if the file is empty', () => {
     // Arrange
-    (readFileSync as jest.Mock<any>).mockReturnValueOnce('');
+    readFileSync.mockReturnValueOnce('');
 
     // Act
     const result = getExistingAuthTokens();
@@ -59,7 +58,7 @@ describe('getExistingAuthTokens', () => {
 
   it('should return null if the file is not valid JSON', () => {
     // Arrange
-    (readFileSync as jest.Mock<any>).mockReturnValueOnce('not json');
+    readFileSync.mockReturnValueOnce('not json');
 
     // Act
     const result = getExistingAuthTokens();
@@ -72,7 +71,7 @@ describe('getExistingAuthTokens', () => {
 
   it('should return null if there is an error', () => {
     // Arrange
-    (readFileSync as jest.Mock<any>).mockImplementationOnce(() => {
+    readFileSync.mockImplementationOnce(() => {
       throw new Error('error');
     });
 

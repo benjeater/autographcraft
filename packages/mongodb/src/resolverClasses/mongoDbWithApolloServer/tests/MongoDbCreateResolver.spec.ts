@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { jest } from '@jest/globals';
 import { HookInNames, RESOLVER_NAME } from '@autographcraft/core';
 import { MongoDbCreateResolver } from '../MongoDbCreateResolver';

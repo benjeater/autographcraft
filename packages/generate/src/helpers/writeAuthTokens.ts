@@ -18,6 +18,6 @@ export function writeAuthTokens(authTokens: AuthTokens): void {
     }
     writeFileSync(filepath, JSON.stringify(authTokens, null, 2));
   } catch (e) {
-    throw new Error(`Error writing auth tokens: ${e}`);
+    throw new Error(`Error writing auth tokens: ${e}`, { cause: e });
   }
 }

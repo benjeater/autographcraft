@@ -73,7 +73,7 @@ export function getLastRequestStrings(): LastRequestStrings | null {
     const jsonString = readFileSync(filepath, 'utf-8');
     const lastRequestStrings = JSON.parse(jsonString);
     return lastRequestStrings;
-  } catch (e) {
+  } catch {
     return null;
   }
 }

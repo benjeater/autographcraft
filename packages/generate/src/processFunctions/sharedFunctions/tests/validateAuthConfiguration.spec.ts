@@ -12,9 +12,8 @@ jest.unstable_mockModule('@autographcraft/core', () => ({
 }));
 
 const { logger } = await import('@autographcraft/core');
-const { validateAuthConfiguration } = await import(
-  '../validateAuthConfiguration'
-);
+const { validateAuthConfiguration } =
+  await import('../validateAuthConfiguration');
 
 describe('validateAuthConfiguration', () => {
   beforeEach(() => {
