@@ -51,7 +51,8 @@ export class MongoDbBaseResolver<ArgType, ReturnType> {
   public context: AutoGraphCraftResolverContext;
   public info: unknown;
   public modelName: string;
-  protected _databaseModel: mongoose.Model<mongoose.Document>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected _databaseModel: mongoose.Model<any>;
   private hookInFiles: HookInFile[];
   protected _architecturalAuthorisation: (
     context: AutoGraphCraftResolverContext
