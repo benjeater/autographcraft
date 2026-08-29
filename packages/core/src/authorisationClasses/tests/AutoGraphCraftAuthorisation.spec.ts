@@ -1,6 +1,8 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import {
   DEFAULT_VALUES,
+  getAuthorisationParamsWithoutLogger,
+  getAuthorisationParamsWithUnsupportedDatabase,
   getDefaultAuthorisationParams,
   mongooseConnectionModelFind,
   mongooseConnectionModelFindById,
@@ -229,6 +231,18 @@ describe('AutoGraphCraftAuthorisation', () => {
       });
       expect(classInstance.hasAuthIdsForModel('admin')).toBeTruthy();
     });
+
+    it('should return true if there are auth ids for the model', async () => {
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+      expect(
+        classInstance.hasAuthIdsForModel(DEFAULT_VALUES.testModel)
+      ).toBeTruthy();
+    });
+
+    it('should return false if there are no auth ids for the model', async () => {
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+      expect(classInstance.hasAuthIdsForModel('OtherTestModel')).toBeFalsy();
+    });
   });
 
   describe('documentAuthorisation', () => {
@@ -285,6 +299,96 @@ describe('AutoGraphCraftAuthorisation', () => {
       await classInstance.initialise({ rootIds: { TestModel: '1' } });
       expect(
         classInstance.documentAuthorisation('OtherTestModel', '1')
+      ).toBeFalsy();
+    });
+  });
+
+  describe('getCacheableData', () => {
+    it('should return all the auth ids that were loaded', async () => {
+      // Arrange
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+
+      // Act
+      const result = classInstance.getCacheableData();
+
+      // Assert
+      expect(result).toEqual({ allAuthIds: ['TestModel::1'] });
+    });
+
+    it('should return the same data that it was initialised with from the cache', async () => {
+      // Arrange
+      const data = { allAuthIds: ['TestModel::1', 'OtherTestModel::2'] };
+      await classInstance.initialiseWithCachedData(data);
+
+      // Act
+      const result = classInstance.getCacheableData();
+
+      // Assert
+      expect(result).toEqual(data);
+    });
+  });
+
+  describe('when the class has not been initialised', () => {
+    it('should throw when getCacheableData is called', () => {
+      expect(() => classInstance.getCacheableData()).toThrow(
+        'AutoGraphCraftAuthorisation is not initialised'
+      );
+    });
+
+    it('should throw when hasAuthIdsForModel is called', () => {
+      expect(() =>
+        classInstance.hasAuthIdsForModel(DEFAULT_VALUES.testModel)
+      ).toThrow('AutoGraphCraftAuthorisation is not initialised');
+    });
+
+    it('should throw when documentAuthorisation is called', () => {
+      expect(() =>
+        classInstance.documentAuthorisation(DEFAULT_VALUES.testModel, '1')
+      ).toThrow('AutoGraphCraftAuthorisation is not initialised');
+    });
+
+    it('should throw when getAuthIdsForModel is called', () => {
+      expect(() =>
+        classInstance.getAuthIdsForModel(DEFAULT_VALUES.testModel)
+      ).toThrow('AutoGraphCraftAuthorisation is not initialised');
+    });
+  });
+
+  describe('when the database type is not supported', () => {
+    it('should throw when initialise is called', async () => {
+      // Arrange
+      classInstance = new AutoGraphCraftAuthorisation(
+        getAuthorisationParamsWithUnsupportedDatabase()
+      );
+
+      // Act / Assert
+      await expect(
+        classInstance.initialise({ rootIds: { TestModel: '1' } })
+      ).rejects.toThrow('Database type DYNAMO_DB not supported');
+    });
+  });
+
+  describe('when no logger is provided', () => {
+    beforeEach(() => {
+      classInstance = new AutoGraphCraftAuthorisation(
+        getAuthorisationParamsWithoutLogger()
+      );
+    });
+
+    it('should initialise without a logger when root ids are missing', async () => {
+      await expect(classInstance.initialise({})).resolves.toBeUndefined();
+    });
+
+    it('should authorise a document without a logger', async () => {
+      // Arrange
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+
+      // Act / Assert
+      expect(
+        classInstance.documentAuthorisation(DEFAULT_VALUES.testModel, '1')
+      ).toBeTruthy();
+      expect(
+        classInstance.documentAuthorisation(DEFAULT_VALUES.testModel, '2')
       ).toBeFalsy();
     });
   });

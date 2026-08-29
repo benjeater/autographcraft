@@ -290,3 +290,14 @@ const filterWithIdParams: FilterConverterMongoDBParams = {
 export function getFilterWithIdParams() {
   return cloneDeep(filterWithIdParams);
 }
+
+const filterWithUndefinedFieldFilterParams: FilterConverterMongoDBParams = {
+  context: defaultContext,
+  filter: {
+    startDate: undefined,
+  },
+};
+
+export function getFilterWithUndefinedFieldFilterParams() {
+  return cloneDeep(filterWithUndefinedFieldFilterParams);
+}

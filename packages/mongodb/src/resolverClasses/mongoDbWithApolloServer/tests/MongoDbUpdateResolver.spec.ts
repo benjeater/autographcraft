@@ -1,8 +1,13 @@
-import { jest } from '@jest/globals';
+import { jest, describe, it, expect } from '@jest/globals';
+import { GraphQLError } from 'graphql';
 import { HookInNames, RESOLVER_NAME } from '@autographcraft/core';
 import { MongoDbUpdateResolver } from '../MongoDbUpdateResolver';
 import type { HookInFunction } from '../../types';
-import { getTestSetup } from './MongoDbUpdateResolver.data';
+import {
+  DEFAULT_VALUES,
+  getStandardUser,
+  getTestSetup,
+} from './MongoDbUpdateResolver.data';
 
 describe('MongoDbUpdateResolver', () => {
   it('should be defined', () => {
@@ -188,5 +193,109 @@ describe('MongoDbUpdateResolver', () => {
     expect(preValidateDocumentHook).toHaveBeenCalledTimes(1);
     expect(getDocumentInstance().lastName).toBe('setInHook');
     expect(result).toEqual(expect.objectContaining({ lastName: 'setInHook' }));
+  });
+
+  describe('errors', () => {
+    it('should throw an InvalidInputError when the id is not a valid MongoDB ObjectId', async () => {
+      // Arrange
+      const { initialisationParams, findOneMock } = getTestSetup();
+      initialisationParams.args.input.id = 'notAValidObjectId';
+
+      // Act
+      const resolver = new MongoDbUpdateResolver(initialisationParams);
+      const thrownError = await resolver.update().catch((err) => err);
+
+      // Assert
+      expect(thrownError).toBeInstanceOf(GraphQLError);
+      expect((thrownError as GraphQLError).message).toBe(
+        'id notAValidObjectId is not a valid MongoDB ObjectId'
+      );
+      expect((thrownError as GraphQLError).extensions.code).toBe(
+        'INVALID_INPUT'
+      );
+      expect(findOneMock).toHaveBeenCalledTimes(0);
+    });
+
+    it('should throw a NoArchitecturalAccessError when architectural authorisation fails', async () => {
+      // Arrange
+      const { initialisationParams, findOneMock } = getTestSetup();
+      initialisationParams.architecturalAuthorisation = jest.fn(
+        async () => false
+      );
+
+      // Act
+      const resolver = new MongoDbUpdateResolver(initialisationParams);
+      const thrownError = await resolver.update().catch((err) => err);
+
+      // Assert
+      expect(thrownError).toBeInstanceOf(GraphQLError);
+      expect((thrownError as GraphQLError).message).toBe(
+        `Caller does not have permission to perform the ${RESOLVER_NAME.READ} operation on ${DEFAULT_VALUES.TEST_MODEL_NAME}`
+      );
+      expect(findOneMock).toHaveBeenCalledTimes(0);
+    });
+
+    it('should throw a NotFoundError when the document does not exist', async () => {
+      // Arrange
+      const { initialisationParams, findOneMock, saveMock } = getTestSetup();
+      findOneMock.mockResolvedValueOnce(null);
+
+      // Act
+      const resolver = new MongoDbUpdateResolver(initialisationParams);
+      const thrownError = await resolver.update().catch((err) => err);
+
+      // Assert
+      expect(thrownError).toBeInstanceOf(GraphQLError);
+      expect((thrownError as GraphQLError).message).toBe(
+        `Document with id ${DEFAULT_VALUES.TEST_DOCUMENT_ID} does not exist, or has already been deleted`
+      );
+      expect((thrownError as GraphQLError).extensions.code).toBe('NOT_FOUND');
+      expect(saveMock).toHaveBeenCalledTimes(0);
+    });
+
+    it('should throw a NotAuthorisedError when document authorisation fails and pass the fetched document to the error hooks', async () => {
+      // Arrange
+      const { initialisationParams, saveMock } = getTestSetup();
+      const errorHook = jest.fn<HookInFunction>();
+      initialisationParams.documentAuthorisation = jest.fn(async () => false);
+      initialisationParams.hookInFiles = [
+        {
+          hookPoint: HookInNames.ERROR,
+          defaultFunction: errorHook,
+          filename: 'testFileHook',
+          resolverName: RESOLVER_NAME.UPDATE,
+          orderNumber: 1,
+        },
+      ];
+
+      // Act
+      const resolver = new MongoDbUpdateResolver(initialisationParams);
+      const thrownError = await resolver.update().catch((err) => err);
+
+      // Assert
+      expect(thrownError).toBeInstanceOf(GraphQLError);
+      expect((thrownError as GraphQLError).message).toBe(
+        `Caller does not have permission to access document with id ${DEFAULT_VALUES.TEST_DOCUMENT_ID}`
+      );
+      expect(saveMock).toHaveBeenCalledTimes(0);
+      expect(errorHook).toHaveBeenCalledTimes(1);
+      expect(errorHook.mock.calls[0][4]).toEqual([getStandardUser()]);
+    });
+
+    it('should wrap a thrown value that is not an Error in a generic GraphQLError', async () => {
+      // Arrange
+      const { initialisationParams } = getTestSetup();
+      initialisationParams.architecturalAuthorisation = jest.fn(async () => {
+        throw 'a string that is not an Error';
+      });
+
+      // Act
+      const resolver = new MongoDbUpdateResolver(initialisationParams);
+      const thrownError = await resolver.update().catch((err) => err);
+
+      // Assert
+      expect(thrownError).toBeInstanceOf(GraphQLError);
+      expect((thrownError as GraphQLError).message).toBe('An error occurred');
+    });
   });
 });
