@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import cloneDeep from 'lodash.cloneDeep';
+import cloneDeep from 'lodash.clonedeep';
 import { AutoGraphCraftAuthorisationParams } from '../../types';
 import mongoose from 'mongoose';
 import { DATABASE_CODES, MONGO_DB_CONNECTION_LIBRARY } from '../../../types';
@@ -33,7 +33,7 @@ const paramsHasOne: AutoGraphCraftAuthorisationParams = {
     model: jest.fn((modelName: string) => {
       if (modelName === 'RootModel') {
         return {
-          findById: jest.fn().mockResolvedValue({
+          findById: jest.fn<() => Promise<unknown>>().mockResolvedValue({
             get: jest.fn((fieldName: string) => {
               if (fieldName === 'id') {
                 return DEFAULT_IDS.RootModel;
@@ -47,7 +47,7 @@ const paramsHasOne: AutoGraphCraftAuthorisationParams = {
       }
       if (modelName === 'TargetModelHasOne') {
         return {
-          find: jest.fn().mockResolvedValue([
+          find: jest.fn<() => Promise<unknown>>().mockResolvedValue([
             {
               get: jest.fn().mockReturnValue(DEFAULT_IDS.TargetModelOne),
             },
@@ -56,7 +56,7 @@ const paramsHasOne: AutoGraphCraftAuthorisationParams = {
       }
       if (modelName === 'TargetModelHasMany') {
         return {
-          find: jest.fn().mockResolvedValue([
+          find: jest.fn<() => Promise<unknown>>().mockResolvedValue([
             {
               get: jest.fn().mockReturnValue(DEFAULT_IDS.TargetModelOne),
             },
@@ -68,7 +68,7 @@ const paramsHasOne: AutoGraphCraftAuthorisationParams = {
       }
       if (modelName === 'TargetModelHasManyChild') {
         return {
-          find: jest.fn().mockResolvedValue([
+          find: jest.fn<() => Promise<unknown>>().mockResolvedValue([
             {
               get: jest.fn().mockReturnValue(DEFAULT_IDS.TargetModelThree),
             },

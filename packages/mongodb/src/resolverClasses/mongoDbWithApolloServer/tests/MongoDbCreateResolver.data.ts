@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { jest } from '@jest/globals';
-import cloneDeep from 'lodash.cloneDeep';
+import cloneDeep from 'lodash.clonedeep';
 import { type MongoDbCreateResolverParams } from '../MongoDbCreateResolver';
 
 const USER_MODEL_FIELDS = [
@@ -50,10 +50,10 @@ export function getStandardUserInput() {
 }
 
 const databaseModelImplementationSave = jest
-  .fn()
+  .fn<() => Promise<unknown>>()
   .mockResolvedValue(getStandardUserDatabaseObject());
 
-const databaseModelImplementationValidate = jest.fn();
+const databaseModelImplementationValidate = jest.fn(async () => undefined);
 
 const databaseModelImplementation = jest.fn().mockImplementation(() => {
   return {
@@ -86,23 +86,25 @@ const initialisationParams: MongoDbCreateResolverParams<any, any> = {
         getAuthIdsForModel: jest.fn().mockReturnValue([]),
       },
     },
-  },
+  } as any,
   args: { input: getStandardUserInput() },
   modelName: DEFAULT_VALUES.TEST_MODEL_NAME,
   databaseModel: databaseModelImplementation,
   hookInFiles: [],
   parent: undefined,
   info: undefined,
-  architecturalAuthorisation: jest.fn().mockReturnValue(true),
-  documentAuthorisation: jest.fn().mockReturnValue(true),
+  architecturalAuthorisation: jest.fn().mockReturnValue(true) as any,
+  documentAuthorisation: jest.fn().mockReturnValue(true) as any,
   getPermittedFieldsForDocument: jest
     .fn()
-    .mockReturnValue(new Set(DEFAULT_VALUES.USER_MODEL_FIELDS)),
+    .mockReturnValue(new Set(DEFAULT_VALUES.USER_MODEL_FIELDS)) as any,
 };
 
-initialisationParams.databaseModel.create = jest.fn().mockResolvedValue({
-  toObject: jest.fn().mockReturnValue(getStandardUser()),
-});
+initialisationParams.databaseModel.create = jest
+  .fn<() => Promise<unknown>>()
+  .mockResolvedValue({
+    toObject: jest.fn().mockReturnValue(getStandardUser()),
+  }) as any;
 
 export function getInitialisationParams() {
   const clonedInitialisationParams = cloneDeep(initialisationParams);

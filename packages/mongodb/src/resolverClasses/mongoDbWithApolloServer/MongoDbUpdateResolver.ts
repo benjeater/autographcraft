@@ -134,6 +134,21 @@ export class MongoDbUpdateResolver<
       const updatedDocumentInstance =
         this.mergeInputWithDatabaseDocument(databaseDocument);
 
+      await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
+        HookInNames.PRE_VALIDATE_DOCUMENT,
+        [updatedDocumentInstance as ReturnType]
+      );
+
+      // Validate the document
+      await updatedDocumentInstance.validate();
+
+      await this.getAndRunHooks(
+        RESOLVER_NAME.UPDATE,
+        HookInNames.POST_VALIDATE_DOCUMENT,
+        [updatedDocumentInstance as ReturnType]
+      );
+
       await this.getAndRunHooks(RESOLVER_NAME.UPDATE, HookInNames.PRE_COMMIT, [
         updatedDocumentInstance as ReturnType,
       ]);

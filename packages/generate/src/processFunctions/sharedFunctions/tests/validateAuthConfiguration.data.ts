@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash.cloneDeep';
+import cloneDeep from 'lodash.clonedeep';
 import type { RootModelAuthorisationDetail } from '@autographcraft/core';
 
 const existingConfiguration: RootModelAuthorisationDetail[] = [

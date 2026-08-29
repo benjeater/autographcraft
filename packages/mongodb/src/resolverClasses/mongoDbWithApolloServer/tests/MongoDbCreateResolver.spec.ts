@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import { HookInNames, RESOLVER_NAME } from '@autographcraft/core';
 import { MongoDbCreateResolver } from '../MongoDbCreateResolver';
+import type { HookInFunction } from '../../types';
 import {
   getDatabaseModelImplementationSave,
   getDatabaseModelImplementationValidate,
@@ -37,9 +38,7 @@ describe('MongoDbCreateResolver', () => {
   it('should throw an error if the user does not have permission to create a document', async () => {
     // Arrange
     const initialisationParams = getInitialisationParams();
-    initialisationParams.documentAuthorisation = jest
-      .fn()
-      .mockReturnValue(false);
+    initialisationParams.documentAuthorisation = jest.fn(async () => false);
 
     // Act
     const resolver = new MongoDbCreateResolver(initialisationParams);
@@ -71,8 +70,8 @@ describe('MongoDbCreateResolver', () => {
   it('should call the appropriate hooks', async () => {
     // Arrange
     const initialisationParams = getInitialisationParams();
-    const preValidateHook = jest.fn();
-    const postValidateHook = jest.fn();
+    const preValidateHook = jest.fn<HookInFunction>();
+    const postValidateHook = jest.fn<HookInFunction>();
 
     initialisationParams.hookInFiles = [
       {
@@ -96,10 +95,12 @@ describe('MongoDbCreateResolver', () => {
   it('should have data added in a hook persist through to the final document', async () => {
     // Arrange
     const initialisationParams = getInitialisationParams();
-    const initialHook = jest.fn().mockImplementation((_parent, args) => {
-      args.input.testField = 'test';
-    });
-    const preValidateHook = jest.fn().mockImplementation();
+    const initialHook = jest
+      .fn<HookInFunction>()
+      .mockImplementation(async (_parent, args) => {
+        (args as { input: Record<string, unknown> }).input.testField = 'test';
+      });
+    const preValidateHook = jest.fn<HookInFunction>();
 
     initialisationParams.hookInFiles = [
       {
@@ -144,8 +145,8 @@ describe('MongoDbCreateResolver', () => {
   it('should have data in the args that is not permitted removed after the initial hook', async () => {
     // Arrange
     const initialisationParams = getInitialisationParams();
-    const initialHook = jest.fn().mockImplementation();
-    const preValidateHook = jest.fn().mockImplementation();
+    const initialHook = jest.fn<HookInFunction>();
+    const preValidateHook = jest.fn<HookInFunction>();
 
     initialisationParams.hookInFiles = [
       {
