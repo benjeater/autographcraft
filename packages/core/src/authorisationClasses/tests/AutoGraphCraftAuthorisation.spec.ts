@@ -354,6 +354,45 @@ describe('AutoGraphCraftAuthorisation', () => {
     });
   });
 
+  describe('authorisation without a document id', () => {
+    // `convertAuthIdToAuthFormat` used to substitute an `ANY_ID` placeholder for
+    // a missing id on both the storage and the lookup side, so a root id that
+    // was never provided produced the very key that a no-id lookup searched
+    // for - a missing root id granted a match instead of denying one.
+    it('should not authorise a normal model when no document id is given', async () => {
+      // Arrange
+      await classInstance.initialise({ rootIds: { TestModel: '1' } });
+
+      // Act / Assert
+      expect(classInstance.documentAuthorisation('TestModel')).toBe(false);
+      expect(classInstance.documentAuthorisation('TestModel', '1')).toBe(true);
+    });
+
+    it('should not authorise anything for a root id that was not provided', async () => {
+      // Arrange
+      await classInstance.initialise({ rootIds: { TestModel: '' } });
+
+      // Act / Assert
+      expect(classInstance.documentAuthorisation('TestModel')).toBe(false);
+      expect(classInstance.getAuthIdsForModel('TestModel')).toEqual([]);
+      expect(classInstance.hasAuthIdsForModel('TestModel')).toBe(false);
+      expect(classInstance.getCacheableData().allAuthIds).toEqual([]);
+    });
+
+    it('should still authorise the special models that take no id', async () => {
+      // Arrange
+      await classInstance.initialise({
+        rootIds: { TestModel: '1' },
+        isAdmin: true,
+      });
+
+      // Act / Assert
+      expect(classInstance.documentAuthorisation('public')).toBe(true);
+      expect(classInstance.documentAuthorisation('signedIn')).toBe(true);
+      expect(classInstance.documentAuthorisation('admin')).toBe(true);
+    });
+  });
+
   describe('round trip through the cache', () => {
     // `rootIds` and `isAdmin` back the `signedIn` and `admin` checks. When
     // `getCacheableData` dropped them, a caller authorised before caching was
@@ -391,6 +430,21 @@ describe('AutoGraphCraftAuthorisation', () => {
       // Assert
       expect(restored.hasAuthIdsForModel('admin')).toBe(true);
       expect(restored.documentAuthorisation('admin')).toBe(true);
+    });
+
+    it('should skip an auth id that has no separator rather than storing undefined', async () => {
+      // Arrange
+      // Nothing the package builds looks like this, but the ids come in from a
+      // cache, so a malformed entry must not put `undefined` into a string[].
+      const entry = { allAuthIds: ['TestModel::1', 'MalformedModel'] };
+
+      // Act
+      await classInstance.initialiseWithCachedData(entry);
+
+      // Assert
+      expect(classInstance.getAuthIdsForModel('TestModel')).toEqual(['1']);
+      expect(classInstance.getAuthIdsForModel('MalformedModel')).toEqual([]);
+      expect(classInstance.hasAuthIdsForModel('MalformedModel')).toBe(false);
     });
 
     it('should treat a cache entry written before rootIds and isAdmin existed as anonymous', async () => {

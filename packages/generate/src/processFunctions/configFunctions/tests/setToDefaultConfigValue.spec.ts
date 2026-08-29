@@ -11,7 +11,6 @@ import type {
   AutoGraphCraftConfigurationField,
 } from '@autographcraft/core';
 import type { ProcessFunctionParams } from '../../../types';
-import { buildParams } from '../../../tests/buildParams';
 
 // ESM has no automocking, so every module this unit reaches for is named
 // explicitly. The real core module is spread so `DEFAULT_CONFIG` keeps its
@@ -60,7 +59,7 @@ function getExistingConfig(): AutoGraphCraftConfiguration {
 }
 
 function getParams(key: string): ProcessFunctionParams {
-  return buildParams(['config', 'setToDefault', key]);
+  return { _: ['config', 'setToDefault', key] };
 }
 
 describe('setToDefaultConfigValue', () => {
@@ -98,12 +97,7 @@ describe('setToDefaultConfigValue', () => {
 
   it('should read the key from the position after the config argument', async () => {
     // Arrange
-    const params = buildParams([
-      'npx',
-      'config',
-      'setToDefault',
-      'queriesDirectory',
-    ]);
+    const params = { _: ['npx', 'config', 'setToDefault', 'queriesDirectory'] };
 
     // Act
     await setToDefaultConfigValue(CWD, params, 1, getExistingConfig());

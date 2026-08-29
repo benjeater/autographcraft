@@ -11,6 +11,16 @@ const LIST_FILTERS = [
 export function convertScalarDetailToScalarFilterInput(
   scalar: ScalarDetail
 ): DocumentNode {
+  // GraphQL does not allow an input type with no fields, so a scalar with no
+  // filters cannot produce a valid filter input. Fail here with the name of the
+  // offending scalar rather than letting `parse` report a syntax error against
+  // generated text the user never wrote.
+  if (scalar.filtersAvailable.length === 0) {
+    throw new Error(
+      `The scalar "${scalar.scalarName}" has no filters available. Add at least one filter to the "filtersAvailable" list for this scalar so that a valid "${scalar.scalarName}Input" filter input type can be generated.`
+    );
+  }
+
   const inputName: string = `${scalar.scalarName}Input {`;
 
   const scalarStringLines: string[] = [`input ${inputName}`];

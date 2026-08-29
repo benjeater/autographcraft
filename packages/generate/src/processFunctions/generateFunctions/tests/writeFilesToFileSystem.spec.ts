@@ -26,9 +26,18 @@ jest.unstable_mockModule('@autographcraft/core', () => ({
 
 // `../helpers` re-exports `validateSchema`, which pulls in @graphql-codegen/cli;
 // codegen 7 depends on yargs 18 and chalk 5, neither of which Jest's ESM loader
-// can link. Stubbing it lets the real `addIgnoreHeaderToContent` be used here.
-jest.unstable_mockModule('@graphql-codegen/cli', () => ({
-  generate: jest.fn(),
+// can link. Mocking the barrel avoids loading it, while the real
+// `addIgnoreHeaderToContent` is still wrapped in the spy so the header written
+// to disk is the genuine one and the file extension it is handed can be
+// asserted directly.
+const actualAddIgnoreHeaderToContent = jest.requireActual<
+  typeof import('../../helpers/addIgnoreHeaderToContent')
+>('../../helpers/addIgnoreHeaderToContent').addIgnoreHeaderToContent;
+
+const addIgnoreHeaderToContent = jest.fn(actualAddIgnoreHeaderToContent);
+
+jest.unstable_mockModule('../../helpers', () => ({
+  addIgnoreHeaderToContent,
 }));
 
 // ESM has no automocking. The `node:fs` mock also stands in for `fs`, which
@@ -139,20 +148,95 @@ describe('writeFilesToFileSystem', () => {
     );
 
     // Assert
+    expect(addIgnoreHeaderToContent).toHaveBeenCalledWith(
+      'type Test { id: ID }',
+      'graphql'
+    );
     const [, contents] = writeFileSync.mock.calls[0];
     expect(contents.startsWith('# This file has been generated')).toBe(true);
   });
 
-  it('should fall back to an empty file extension when the file path is empty', () => {
+  it('should derive the extension from the file name', () => {
+    // Act
+    writeFilesToFileSystem([getOutputFile({ addIgnoreHeader: true })], false);
+
+    // Assert
+    expect(addIgnoreHeaderToContent).toHaveBeenCalledWith(
+      'export const a = 1;',
+      'ts'
+    );
+  });
+
+  it('should use only the final part of a multi-part extension', () => {
     // Act
     writeFilesToFileSystem(
-      [getOutputFile({ filePath: '', addIgnoreHeader: true })],
+      [
+        getOutputFile({
+          filePath: '/project/generated/schema.d.ts',
+          addIgnoreHeader: true,
+        }),
+      ],
+      false
+    );
+
+    // Assert
+    expect(addIgnoreHeaderToContent).toHaveBeenCalledWith(
+      'export const a = 1;',
+      'ts'
+    );
+  });
+
+  it.each([
+    ['a file name with no dot', '/project/generated/Makefile'],
+    ['a dotfile', '/project/generated/.gitignore'],
+    ['a dot in a directory name', '/project/src/v1.2/Makefile'],
+    ['a dotfile below a dotted directory', '/project/src/v1.2/.gitignore'],
+    ['a trailing dot', '/project/generated/Makefile.'],
+    ['an empty file path', ''],
+  ])('should derive no extension from %s', (_description, filePath) => {
+    // Act
+    writeFilesToFileSystem(
+      [getOutputFile({ filePath, addIgnoreHeader: true })],
+      false
+    );
+
+    // Assert
+    expect(addIgnoreHeaderToContent).toHaveBeenCalledWith(
+      'export const a = 1;',
+      ''
+    );
+  });
+
+  it('should still write the javascript header for a path with no extension', () => {
+    // Act
+    writeFilesToFileSystem(
+      [
+        getOutputFile({
+          filePath: '/project/generated/Makefile',
+          addIgnoreHeader: true,
+        }),
+      ],
       false
     );
 
     // Assert
     const [, contents] = writeFileSync.mock.calls[0];
     expect(contents).toBe(`${JAVASCRIPT_HEADER}export const a = 1;`);
+  });
+
+  it('should not add a header when none is requested, whatever the extension', () => {
+    // Act
+    writeFilesToFileSystem(
+      [getOutputFile({ filePath: '/project/generated/Makefile' })],
+      false
+    );
+
+    // Assert
+    expect(addIgnoreHeaderToContent).not.toHaveBeenCalled();
+    expect(writeFileSync).toHaveBeenCalledWith(
+      '/project/generated/Makefile',
+      'export const a = 1;'
+    );
   });
 
   it('should skip a file that already exists and must not be overwritten', () => {

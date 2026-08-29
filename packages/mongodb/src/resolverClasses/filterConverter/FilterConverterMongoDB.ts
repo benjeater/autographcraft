@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type {
-  AutoGraphCraftResolverContext,
-  Logger,
-} from '@autographcraft/core';
+import type { AutoGraphCraftResolverContext } from '@autographcraft/core';
 import { and, or, not, classMap, FieldFilter } from './filterClasses';
-import { IFilterClass } from './filterClasses/IFilterClass';
+import { FilterClassParams, IFilterClass } from './filterClasses/IFilterClass';
 
 export type FilterConverterMongoDBParams = {
   context: AutoGraphCraftResolverContext;
@@ -14,7 +11,27 @@ export type FilterConverterMongoDBParams = {
 
 type SingleFilter = Record<keyof typeof classMap, any>;
 
-const RECURSIVE_NODE_NAMES = ['and', 'or', 'not'];
+const RECURSIVE_NODE_NAMES = ['and', 'or', 'not'] as const;
+
+type RecursiveNodeName = (typeof RECURSIVE_NODE_NAMES)[number];
+
+/**
+ * The filter class that handles each recursive node.
+ *
+ * Keying this by the union rather than switching on the node name makes it
+ * exhaustive by construction: adding a name to `RECURSIVE_NODE_NAMES` is a
+ * compile error until it has an entry here. The `switch` this replaced needed a
+ * `default` arm that no input could ever reach, because its cases were the
+ * whole of the array that the guard above had already tested membership of.
+ */
+const RECURSIVE_NODE_CLASSES: Record<
+  RecursiveNodeName,
+  new (params: FilterClassParams<any>) => IFilterClass
+> = { and, or, not };
+
+function isRecursiveNodeName(value: string): value is RecursiveNodeName {
+  return (RECURSIVE_NODE_NAMES as readonly string[]).includes(value);
+}
 
 /**
  * A class to convert filter arguments from the GraphQL list query filter into a format
@@ -22,11 +39,9 @@ const RECURSIVE_NODE_NAMES = ['and', 'or', 'not'];
  */
 export class FilterConverterMongoDB {
   private context: AutoGraphCraftResolverContext;
-  private logger: Logger | undefined;
   private filter: Record<string, SingleFilter>;
   constructor(params: FilterConverterMongoDBParams) {
     this.context = params.context;
-    this.logger = params.context.autographcraft.logger;
     this.filter = params.filter || {};
   }
 
@@ -36,11 +51,7 @@ export class FilterConverterMongoDB {
     for (const [fieldNameOrRecursiveNodeName, fieldFilter] of Object.entries(
       this.filter
     )) {
-      const isRecursive = RECURSIVE_NODE_NAMES.includes(
-        fieldNameOrRecursiveNodeName as string
-      );
-
-      if (!isRecursive) {
+      if (!isRecursiveNodeName(fieldNameOrRecursiveNodeName)) {
         // This is a field filter, so we can convert it directly
         const fieldFilterInstance = new FieldFilter(
           this.context,
@@ -52,39 +63,14 @@ export class FilterConverterMongoDB {
       }
 
       // This is a recursive node, so we need to convert it differently
-      switch (fieldNameOrRecursiveNodeName) {
-        case RECURSIVE_NODE_NAMES[0]: {
-          const params = {
-            context: this.context,
-            valueOfFilter: fieldFilter as unknown as SingleFilter[],
-          };
-          const andInstance = new and(params);
-          filterNodes.push(andInstance);
-          break;
-        }
-        case RECURSIVE_NODE_NAMES[1]: {
-          const params = {
-            context: this.context,
-            valueOfFilter: fieldFilter as unknown as SingleFilter[],
-          };
-          const orInstance = new or(params);
-          filterNodes.push(orInstance);
-          break;
-        }
-        case RECURSIVE_NODE_NAMES[2]: {
-          const params = {
-            context: this.context,
-            valueOfFilter: fieldFilter,
-          };
-          const notInstance = new not(params);
-          filterNodes.push(notInstance);
-          break;
-        }
-        default:
-          this.logger?.warn(
-            `Unknown recursive node name: ${fieldNameOrRecursiveNodeName}`
-          );
-      }
+      const RecursiveNodeClass =
+        RECURSIVE_NODE_CLASSES[fieldNameOrRecursiveNodeName];
+      filterNodes.push(
+        new RecursiveNodeClass({
+          context: this.context,
+          valueOfFilter: fieldFilter,
+        })
+      );
     }
 
     const returnFilter = filterNodes.reduce((acc, filterClass) => {

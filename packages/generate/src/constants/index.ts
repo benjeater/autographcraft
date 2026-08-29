@@ -48,6 +48,7 @@ export const PROCESS_ARGUMENT_PARAMS = {
   CLEAN_MODELS_SHORT: 'm',
   QUIET: 'quiet',
   QUIET_SHORT: 'q',
+  HELP: 'help',
   USERNAME: 'username',
   PASSWORD: 'password',
 } as const;

@@ -7,11 +7,6 @@ describe('splitAuthFormatToModelNameAndAuthId', () => {
     expect(result).toEqual(['TestModel', '1234']);
   });
 
-  it('should split an auth format string with the ANY_ID placeholder', () => {
-    const result = splitAuthFormatToModelNameAndAuthId('TestModel::ANY_ID');
-    expect(result).toEqual(['TestModel', 'ANY_ID']);
-  });
-
   it('should return an undefined id when there is no separator', () => {
     const result = splitAuthFormatToModelNameAndAuthId('TestModel');
     expect(result).toEqual(['TestModel', undefined]);

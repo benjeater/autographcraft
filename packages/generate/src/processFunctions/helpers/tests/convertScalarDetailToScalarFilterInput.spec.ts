@@ -17,12 +17,22 @@ describe('convertScalarDetailToScalarFilterInput', () => {
     expect(convertScalarDetailToScalarFilterInput).toBeDefined();
   });
 
-  it('should throw when the scalar has no filters available, because an empty input block is not valid graphql', () => {
+  it('should throw an error naming the scalar when it has no filters available', () => {
     // Arrange
     const scalar = getScalarDetail([]);
 
     // Act / Assert
     expect(() => convertScalarDetailToScalarFilterInput(scalar)).toThrow(
+      'The scalar "MyScalar" has no filters available. Add at least one filter to the "filtersAvailable" list for this scalar so that a valid "MyScalarInput" filter input type can be generated.'
+    );
+  });
+
+  it('should not report a graphql syntax error when the scalar has no filters available', () => {
+    // Arrange
+    const scalar = getScalarDetail([]);
+
+    // Act / Assert
+    expect(() => convertScalarDetailToScalarFilterInput(scalar)).not.toThrow(
       /Syntax Error/
     );
   });

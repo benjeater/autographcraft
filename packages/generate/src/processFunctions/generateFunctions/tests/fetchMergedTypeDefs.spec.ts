@@ -181,10 +181,6 @@ describe('fetchMergedTypeDefs', () => {
   it('should merge the schema files together with every scalar type def', async () => {
     // Arrange
     const schemaFiles = getSchemaFileDocuments();
-    // The unit pushes the scalar type defs onto the array `loadFilesSync`
-    // returns, so the original length has to be captured before the act step.
-    const schemaFileCount = schemaFiles.length;
-    const firstSchemaFile = schemaFiles[0];
     loadFilesSync.mockReturnValue(schemaFiles);
     const customScalars = [getCustomScalar('Money')];
 
@@ -194,12 +190,29 @@ describe('fetchMergedTypeDefs', () => {
     // Assert
     const [mergedInput] = mergeTypeDefs.mock.calls[0];
     expect(mergedInput).toHaveLength(
-      schemaFileCount +
+      schemaFiles.length +
         DEFAULT_SCALARS.length +
         PACKAGE_SCALARS.length * 2 +
         customScalars.length * 2
     );
-    expect(mergedInput[0]).toBe(firstSchemaFile);
+    expect(mergedInput[0]).toBe(schemaFiles[0]);
+  });
+
+  it('should not modify the array returned by loadFilesSync', async () => {
+    // Arrange
+    const schemaFiles = getSchemaFileDocuments();
+    loadFilesSync.mockReturnValue(schemaFiles);
+
+    // Act
+    await fetchMergedTypeDefs(CWD, CONFIGURATION, [getCustomScalar('Money')]);
+
+    // Assert
+    expect(schemaFiles.map((typeDef) => print(typeDef))).toEqual(
+      getSchemaFileDocuments().map((typeDef) => print(typeDef))
+    );
+    expect(schemaFiles).toHaveLength(1);
+    const [mergedInput] = mergeTypeDefs.mock.calls[0];
+    expect(mergedInput).not.toBe(schemaFiles);
   });
 
   it('should report progress before and after the merge', async () => {

@@ -1,5 +1,10 @@
 import { describe, it, expect } from '@jest/globals';
-import { Kind, type IntValueNode, type StringValueNode } from 'graphql';
+import {
+  GraphQLError,
+  Kind,
+  type IntValueNode,
+  type StringValueNode,
+} from 'graphql';
 import { ISO8601DateTime } from '../ISO8601DateTime';
 import {
   TEST_DATE_STRINGS_FAIL,
@@ -70,14 +75,46 @@ describe('ISO8601DateTime', () => {
     }
   });
 
-  it('should return null when parseLiteral is called with a non-string AST node', () => {
+  it('should throw when parseLiteral is called with a non-string AST node', () => {
     // Arrange
     const ast: IntValueNode = { kind: Kind.INT, value: '123' };
 
+    // Act / Assert
+    expect(() => ISO8601DateTime.parseLiteral(ast, undefined)).toThrow(
+      'GraphQL ISO8601DateTime Scalar parser expected a `string`'
+    );
+  });
+
+  it('should throw when parseLiteral is called with an unparseable date string', () => {
+    for (const dateString of TEST_DATE_STRINGS_FAIL) {
+      // Arrange
+      const ast: StringValueNode = { kind: Kind.STRING, value: dateString };
+
+      // Act / Assert
+      expect(() => ISO8601DateTime.parseLiteral(ast, undefined)).toThrow(
+        'Invalid ISO8601 date string provided'
+      );
+    }
+  });
+
+  it('should attach the AST node to the error so it carries a query location', () => {
+    // Arrange
+    const ast: StringValueNode = {
+      kind: Kind.STRING,
+      value: 'invalid-date-string',
+    };
+
     // Act
-    const result = ISO8601DateTime.parseLiteral(ast, undefined);
+    const thrownError = (() => {
+      try {
+        ISO8601DateTime.parseLiteral(ast, undefined);
+      } catch (error) {
+        return error;
+      }
+    })();
 
     // Assert
-    expect(result).toBeNull();
+    expect(thrownError).toBeInstanceOf(GraphQLError);
+    expect((thrownError as GraphQLError).nodes).toEqual([ast]);
   });
 });

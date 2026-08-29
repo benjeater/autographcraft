@@ -6,7 +6,6 @@ import type {
   MONGO_DB_CONNECTION_LIBRARY as MONGO_DB_CONNECTION_LIBRARY_TYPE,
 } from '@autographcraft/core';
 import { PROCESS_ARGUMENT_PARAMS } from '../../constants';
-import { buildParams } from '../../tests/buildParams';
 
 // ESM has no automocking, so every module this unit reaches for is named
 // explicitly and the unit under test is imported after the mocks are
@@ -92,7 +91,7 @@ const { logger, DEFAULT_CONFIG, CONFIG_FILE_NAME, DATABASE_CODES } =
 const { init } = await import('../init');
 
 const CWD = '/project';
-const NO_PARAMS = buildParams(['init']);
+const NO_PARAMS = { _: ['init'] };
 
 describe('init', () => {
   beforeEach(() => {
@@ -155,9 +154,7 @@ describe('init', () => {
 
   it('should write the default configuration without asking anything for the default flag', async () => {
     // Arrange
-    const params = buildParams(['init'], {
-      [PROCESS_ARGUMENT_PARAMS.DEFAULT]: true,
-    });
+    const params = { _: ['init'], [PROCESS_ARGUMENT_PARAMS.DEFAULT]: true };
 
     // Act
     await init(CWD, params);
@@ -176,9 +173,10 @@ describe('init', () => {
 
   it('should write the default configuration for the short default flag', async () => {
     // Arrange
-    const params = buildParams(['init'], {
+    const params = {
+      _: ['init'],
       [PROCESS_ARGUMENT_PARAMS.DEFAULT_SHORT]: true,
-    });
+    };
 
     // Act
     await init(CWD, params);

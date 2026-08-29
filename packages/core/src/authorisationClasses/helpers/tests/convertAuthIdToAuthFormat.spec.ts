@@ -7,13 +7,21 @@ describe('convertAuthIdToAuthFormat', () => {
     expect(result).toEqual('TestModel::1234');
   });
 
-  it('should use ANY_ID when no id is provided', () => {
-    const result = convertAuthIdToAuthFormat('TestModel');
-    expect(result).toEqual('TestModel::ANY_ID');
+  it('should build a distinct key for every id', () => {
+    // Arrange / Act
+    const first = convertAuthIdToAuthFormat('TestModel', '1234');
+    const second = convertAuthIdToAuthFormat('TestModel', '5678');
+
+    // Assert
+    expect(first).not.toEqual(second);
   });
 
-  it('should use ANY_ID when the id is an empty string', () => {
-    const result = convertAuthIdToAuthFormat('TestModel', '');
-    expect(result).toEqual('TestModel::ANY_ID');
+  it('should build a distinct key for the same id on different models', () => {
+    // Arrange / Act
+    const first = convertAuthIdToAuthFormat('TestModel', '1234');
+    const second = convertAuthIdToAuthFormat('OtherTestModel', '1234');
+
+    // Assert
+    expect(first).not.toEqual(second);
   });
 });

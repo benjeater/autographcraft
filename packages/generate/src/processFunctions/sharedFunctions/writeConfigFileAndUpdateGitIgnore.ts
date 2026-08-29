@@ -40,18 +40,24 @@ export function writeConfigFileAndUpdateGitIgnore(
   );
 
   const gitignoreContent = readFileSync(gitIgnorePath, { encoding: 'utf8' });
-  const gitignoreContentLines = gitignoreContent.split('\n');
+  // An empty file has no lines at all; splitting it would produce a single
+  // empty line and push the label onto the second line of the file
+  const gitignoreContentLines =
+    gitignoreContent === '' ? [] : gitignoreContent.split('\n');
 
   // Find the index of the gitIgnore label in the gitIgnore file
   let gitIgnoreLabelIndex = getIgnoreLabelIndex(gitignoreContentLines);
 
   // Add the gitignore label if it is not present
   if (gitIgnoreLabelIndex === -1) {
-    if (gitignoreContentLines[-1] !== '') {
+    // Separate the label from any existing content with a single blank line
+    const lastLine = gitignoreContentLines[gitignoreContentLines.length - 1];
+    if (gitignoreContentLines.length > 0 && lastLine !== '') {
       gitignoreContentLines.push('');
     }
+    // The label is appended, so its index is the length before the push
+    gitIgnoreLabelIndex = gitignoreContentLines.length;
     gitignoreContentLines.push(GIT_IGNORE_LABEL);
-    gitIgnoreLabelIndex = getIgnoreLabelIndex(gitignoreContentLines);
   }
 
   const {
@@ -136,14 +142,19 @@ function addLineToGitIgnore(
   newGitIgnoreLine: string,
   existingValue?: string
 ): void {
-  let writeLineIndex: number = gitIgnoreLabelIndex + 1;
+  // New lines go directly under the label, and only the lines under the label
+  // are managed, so that same index is the origin of the search for an existing
+  // line. `indexOf` runs over a slice, so the origin has to be added back to
+  // turn its result into an index into `gitignoreContentLines`
+  const firstManagedLineIndex = gitIgnoreLabelIndex + 1;
+  let writeLineIndex: number = firstManagedLineIndex;
   let hasExistingLine: boolean = false;
   if (existingValue) {
-    const linesAfterLabel = gitignoreContentLines.slice(gitIgnoreLabelIndex);
+    const linesAfterLabel = gitignoreContentLines.slice(firstManagedLineIndex);
     const existingLineIndex = linesAfterLabel.indexOf(existingValue);
     if (existingLineIndex !== -1) {
       hasExistingLine = true;
-      writeLineIndex = gitIgnoreLabelIndex + existingLineIndex;
+      writeLineIndex = firstManagedLineIndex + existingLineIndex;
     }
   }
 

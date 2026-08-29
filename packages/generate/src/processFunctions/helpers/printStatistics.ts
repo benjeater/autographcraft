@@ -5,7 +5,6 @@ export type PrintStatisticsParams = {
   outputFiles: OutputFileDetail[];
   isDryRun: boolean;
   startTime: bigint;
-  verbose?: boolean;
 };
 
 /**

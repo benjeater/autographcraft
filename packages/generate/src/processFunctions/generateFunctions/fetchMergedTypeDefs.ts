@@ -40,17 +40,21 @@ export async function fetchMergedTypeDefs(
 
   logger.info(`Fetching schema files from ${schemaSourceDirectory}...`);
 
-  const typesArray: DocumentNode[] = loadFilesSync(schemaSourceDirectory, {
+  const loadedTypeDefs: DocumentNode[] = loadFilesSync(schemaSourceDirectory, {
     extensions: PERMITTED_EXTENSIONS,
   });
 
-  if (typesArray.length === 0) {
+  if (loadedTypeDefs.length === 0) {
     logger.warn(
       `No schema files found in the directory ${schemaSourceDirectory}`
     );
     logger.end();
     process.exit(0);
   }
+
+  // Copy the loaded type defs so the array returned by `loadFilesSync` is not
+  // mutated by the scalar type defs added below
+  const typesArray: DocumentNode[] = [...loadedTypeDefs];
 
   // For all default scalars, add the filter input types
   DEFAULT_SCALARS.forEach((defaultScalar) => {

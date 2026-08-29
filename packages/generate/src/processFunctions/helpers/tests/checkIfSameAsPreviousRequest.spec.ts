@@ -42,9 +42,7 @@ const SCHEMA = {
 function getParams(
   overrides: Partial<ProcessFunctionParams> = {}
 ): ProcessFunctionParams {
-  // `ProcessFunctionParams` intersects a `string | boolean | number` index
-  // signature with `_: string[]`, so an object literal needs the assertion.
-  return { _: ['generate'], ...overrides } as ProcessFunctionParams;
+  return { _: ['generate'], ...overrides };
 }
 
 function getStoredRequest(

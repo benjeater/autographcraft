@@ -1,4 +1,4 @@
-import { join, sep } from 'path';
+import { join } from 'path';
 import { generate } from '@graphql-codegen/cli';
 import type { Types } from '@graphql-codegen/plugin-helpers';
 import type {
@@ -75,14 +75,9 @@ function getPrintableSchemaFileContent(
     TYPE_DEFS_FILE_NAME
   );
 
-  // Remove leading slash from all file paths and replace all forward slashes
-  // with the system's path separator
-  const mappedFiles = files.map((file) => {
-    file.filePath = file.filePath.replace(/^\//, '').replaceAll('/', sep);
-    return file;
-  });
-
-  const printableSchemaFile = mappedFiles.find(
+  // The paths arrive already normalised from `getFilesFromResponse`, so they
+  // can be compared against the joined path directly.
+  const printableSchemaFile = files.find(
     (file) => file.filePath === printableSchemaFilePath
   );
   if (!printableSchemaFile) {
