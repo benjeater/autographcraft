@@ -1,11 +1,39 @@
 {
   "name": "@autographcraft/core",
-  "version": "1.5.0",
-  "description": "The core application for AutoGraphCraft",
+  "version": "1.6.0",
+  "description": "Shared types, authorisation classes, and runtime helpers for AutoGraphCraft-generated GraphQL APIs",
+  "keywords": [
+    "autographcraft",
+    "graphql",
+    "graphql-api",
+    "graphql-server",
+    "code-generation",
+    "codegen",
+    "api-generator",
+    "authorisation",
+    "typescript"
+  ],
+  "homepage": "https://github.com/benjeater/autographcraft#readme",
+  "bugs": {
+    "url": "https://github.com/benjeater/autographcraft/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjeater/autographcraft.git",
+    "directory": "packages/core"
+  },
+  "license": "MIT",
+  "author": "AutoGraphCraft <hello@autographcraft.com>",
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/commonjs/app.js",
   "module": "./dist/esm/app.js",
-  "types": "./dist/commonjs/app",
-  "type": "module",
+  "types": "./dist/commonjs/app.d.ts",
   "exports": {
     "./package.json": "./package.json",
     "./README.md": "./README.md",
@@ -38,22 +66,9 @@
     "startVerbose": "npm run compile && dotenvx run -- nodemon dist/esm/app.js,",
     "lint": "eslint"
   },
-  "author": "AutoGraphCraft <hello@autographcraft.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/benjeater/autographcraft.git"
-  },
   "dependencies": {
-    "@graphql-codegen/cli": "^7.3.1",
-    "@graphql-codegen/typescript": "^6.1.0",
-    "@graphql-tools/load-files": "^7.0.0",
-    "@graphql-tools/merge": "^9.0.8",
-    "@inquirer/prompts": "^8.7.0",
     "graphql": "^17.0.2",
-    "lodash.clonedeep": "^4.5.0",
     "mongoose": "^9.9.4",
-    "mustache": "^4.2.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
@@ -63,17 +78,16 @@
     "@types/eslint": "^9.6.1",
     "@types/jest": "^30.0.0",
     "@types/lodash.clonedeep": "^4.5.9",
-    "@types/mustache": "^4.2.5",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.11.0",
     "jest": "^30.5.0",
+    "lodash.clonedeep": "^4.5.0",
     "nodemon": "^3.1.14",
     "prettier": "^3.9.6",
     "ts-jest": "^29.4.12",
     "tsc-alias": "^1.9.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.68.0"
-  },
-  "keywords": []
+  }
 }

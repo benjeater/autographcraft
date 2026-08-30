@@ -1,14 +1,43 @@
 {
   "name": "@autographcraft/generate",
-  "version": "1.5.0",
-  "description": "The generate application for AutoGraphCraft",
+  "version": "1.6.0",
+  "description": "CLI that generates a complete GraphQL API - resolvers, typedefs, TypeScript types, and database schema - from GraphQL schema files",
+  "keywords": [
+    "autographcraft",
+    "graphql",
+    "graphql-api",
+    "graphql-schema",
+    "code-generation",
+    "codegen",
+    "api-generator",
+    "scaffolding",
+    "cli",
+    "typescript"
+  ],
+  "homepage": "https://github.com/benjeater/autographcraft#readme",
+  "bugs": {
+    "url": "https://github.com/benjeater/autographcraft/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjeater/autographcraft.git",
+    "directory": "packages/generate"
+  },
+  "license": "MIT",
+  "author": "AutoGraphCraft <hello@autographcraft.com>",
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "autographcraft": "dist/esm/app.js"
   },
   "main": "./dist/commonjs/app.js",
   "module": "./dist/esm/app.js",
-  "types": "./dist/commonjs/app",
-  "type": "module",
+  "types": "./dist/commonjs/app.d.ts",
   "exports": {
     "./package.json": "./package.json",
     "./README.md": "./README.md",
@@ -41,18 +70,15 @@
     "startVerbose": "npm run compile && dotenvx run -- nodemon dist/esm/app.js,",
     "lint": "eslint"
   },
-  "author": "AutoGraphCraft <hello@autographcraft.com>",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/benjeater/autographcraft.git"
-  },
-  "license": "MIT",
   "dependencies": {
-    "@autographcraft/core": "^1.5.0",
+    "@autographcraft/core": "^1.6.0",
     "@graphql-codegen/cli": "^7.3.1",
     "@graphql-codegen/plugin-helpers": "^7.2.1",
     "@graphql-codegen/typescript": "^6.1.0",
+    "@graphql-tools/load-files": "^7.0.0",
+    "@graphql-tools/merge": "^9.0.8",
     "@inquirer/prompts": "^8.7.0",
+    "graphql": "^17.0.2",
     "jwt-decode": "^4.0.0",
     "lodash.clonedeep": "^4.5.0",
     "open": "^11.0.1",
@@ -78,6 +104,5 @@
     "tsc-alias": "^1.9.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.68.0"
-  },
-  "keywords": []
+  }
 }

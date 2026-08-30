@@ -1,14 +1,34 @@
 {
   "name": "autographcraft",
-  "private": "true",
+  "version": "1.6.0",
+  "private": true,
+  "description": "Monorepo for AutoGraphCraft - generate an entire GraphQL API from GraphQL schema files",
+  "homepage": "https://github.com/benjeater/autographcraft#readme",
+  "bugs": {
+    "url": "https://github.com/benjeater/autographcraft/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjeater/autographcraft.git"
+  },
+  "license": "MIT",
+  "author": "AutoGraphCraft <hello@autographcraft.com>",
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
   "workspaces": [
     "packages/core",
     "packages/mongodb",
     "packages/generate"
   ],
+  "overrides": {
+    "graphql-config": {
+      "graphql": "^17.0.2"
+    }
+  },
   "scripts": {
-    "copyReadMe": "for dir in packages/*; do cp README.md \"$dir/\"; done",
+    "copyReadMe": "for dir in packages/*; do cp README.md README-*.md \"$dir/\"; done",
     "copyExamples": "for dir in packages/*; do cp -r examples \"$dir/\"; done",
     "copyFiles": "npm run copyReadMe",
     "publishAll": "npm run clean -ws && npm run copyFiles && npm publish -w=packages/core && npm publish -w=packages/generate && npm publish -w=packages/mongodb",
@@ -20,7 +40,8 @@
     "esm": true,
     "experimentalSpecifierResolution": "node"
   },
-  "dependencies": {
+  "devDependencies": {
+    "graphql": "^17.0.2",
     "rimraf": "^6.0.1"
   }
 }
