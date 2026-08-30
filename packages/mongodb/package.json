@@ -1,11 +1,39 @@
 {
   "name": "@autographcraft/mongodb",
-  "version": "1.5.0",
-  "description": "The MongoDB resolver plugin for AutoGraphCraft",
+  "version": "1.6.0",
+  "description": "MongoDB and Mongoose resolver implementations for AutoGraphCraft-generated GraphQL APIs",
+  "keywords": [
+    "autographcraft",
+    "graphql",
+    "graphql-api",
+    "graphql-resolvers",
+    "mongodb",
+    "mongoose",
+    "database",
+    "code-generation",
+    "typescript"
+  ],
+  "homepage": "https://github.com/benjeater/autographcraft#readme",
+  "bugs": {
+    "url": "https://github.com/benjeater/autographcraft/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjeater/autographcraft.git",
+    "directory": "packages/mongodb"
+  },
+  "license": "MIT",
+  "author": "AutoGraphCraft <hello@autographcraft.com>",
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/commonjs/app.js",
   "module": "./dist/esm/app.js",
-  "types": "./dist/commonjs/app",
-  "type": "module",
+  "types": "./dist/commonjs/app.d.ts",
   "exports": {
     "./package.json": "./package.json",
     "./README.md": "./README.md",
@@ -38,14 +66,8 @@
     "startVerbose": "npm run compile && dotenvx run -- nodemon dist/esm/app.js,",
     "lint": "eslint"
   },
-  "author": "AutoGraphCraft <hello@autographcraft.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/benjeater/autographcraft.git"
-  },
   "dependencies": {
-    "@autographcraft/core": "^1.5.0",
+    "@autographcraft/core": "^1.6.0",
     "graphql": "^17.0.2",
     "lodash.clonedeep": "^4.5.0",
     "mongoose": "^9.9.4"

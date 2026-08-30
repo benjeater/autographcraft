@@ -224,12 +224,6 @@ The `create` and `update` resolvers run these hook points. `create` validates th
 new document, and `update` validates the document that the input was merged into,
 in both cases before the write is attempted.
 
-**NOTE:**  
-The `update` resolver only runs these hook points in releases of the resolver
-classes after `1.5.0`. On `1.5.0` and earlier, only `create` runs them, and an
-`update-preValidateDocument-*` or `update-postValidateDocument-*` hook-in file is
-silently never called.
-
 The `delete` resolver does not run them, because a delete is a soft delete that
 writes only a `deletedAt` timestamp. The `read` and `list` resolvers never write
 a document, so there is nothing for the pair to bracket.
@@ -314,13 +308,6 @@ Not all hook points are available for all resolvers. The following is a table of
 | postCommit                     | ✔      |      | ✔      | ✔      |      |
 | final                          | ✔      | ✔    | ✔      | ✔      | ✔    |
 | error                          | ✔      | ✔    | ✔      | ✔      | ✔    |
-
-**NOTE:**  
-The `update` resolver only runs `preValidateDocument` and `postValidateDocument`
-in releases of the resolver classes after `1.5.0`. On `1.5.0` and earlier, an
-`update-preValidateDocument-*` or `update-postValidateDocument-*` hook-in file
-is silently never called; check the version you have installed before relying on
-them.
 
 **NOTE:**  
 A `pre`/`post` pair being available for a resolver does not always mean that a
