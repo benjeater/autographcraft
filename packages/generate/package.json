@@ -72,8 +72,8 @@
   },
   "dependencies": {
     "@autographcraft/core": "^1.6.0",
-    "@graphql-codegen/cli": "^7.3.1",
-    "@graphql-codegen/plugin-helpers": "^7.2.1",
+    "@graphql-codegen/cli": "^7.4.6",
+    "@graphql-codegen/plugin-helpers": "^7.4.2",
     "@graphql-codegen/typescript": "^6.1.0",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.8",
